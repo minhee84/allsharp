@@ -1,0 +1,29 @@
+{
+  "_comment": "HTML 시안·프로토타입을 만들 때 반드시 참고하는 프로젝트 자료. 에이전트는 local 경로를 먼저 보고(사용자 PC에서 실행할 때), 없으면 repo 사본(design/00-spec/sources/...)을 본다. 둘 다 없으면 중단하고 자료를 요청한다.",
+  "sources": [
+    {
+      "id": "plan",
+      "role": "기획·Action Plan — 착수보고, ActionPlan(GOAL 01~03, UI/UX 핵심 개선 포인트 6가지), 페르소나, 일정",
+      "local": "C:\\Users\\박민희\\Desktop\\클로드\\3300.UI,UX 프로젝트\\01. 기획 및 Action Plan",
+      "repo": "design/00-spec/sources/01-plan",
+      "used_by": ["structure-builder", "concept-designer", "design-rules-generator"],
+      "use_for": ["화면에 담을 기능·개선 포인트 확인", "원칙 우선순위·페르소나", "착수보고 기준값과 fixed-conditions.md 대조"]
+    },
+    {
+      "id": "microinteraction",
+      "role": "마이크로인터랙션 예제 — microinteraction-examples.html (입력요소 17종 × 4 = 68개), 모션 토큰·이징·reduced-motion 처리의 원본",
+      "local": "C:\\Users\\박민희\\Desktop\\클로드\\3300.UI,UX 프로젝트\\98. 마이크로인터렉션",
+      "repo": "design/00-spec/sources/98-microinteraction",
+      "used_by": ["concept-designer", "prototype-builder"],
+      "use_for": ["상태 프레임(기본→진행→완료) 표현", "screens.json interactions 의 ref(01-B, 13-D …) 예제 코드 확인", "모션 시간·이징 값 검증", "채택/조건부/제외 분류(설계기준 6-4-2) 준수"]
+    },
+    {
+      "id": "dashboard-samples",
+      "role": "대시보드 샘플 — 홈(T1) 위젯 구성·배치·차트 표현 참고",
+      "local": "C:\\Users\\박민희\\Desktop\\클로드\\3300.UI,UX 프로젝트\\03. 디자인작업\\대시보드 샘플",
+      "repo": "design/00-spec/sources/03-dashboard-samples",
+      "used_by": ["structure-builder", "concept-designer"],
+      "use_for": ["홈 위젯 영역·항목(AS-IS 5개 영역)", "세 안 공통 위젯 배치", "차트 규칙(빠진 월·진행 중 월) 예시"]
+    }
+  ]
+}

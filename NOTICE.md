@@ -11,6 +11,11 @@
   - 게이트 1 조건: 컨셉(A·B·C)별 3장 + AS-IS 1장 + 출처 기록
 - 예시 PRD를 `docs/examples/huddling-PRD.md`로 이동, 루트 `PRD.md`는 ALL# 요약
 
+- Phase 2b 컨셉 시안 3안(HTML) 추가: `concept-designer`, `/design-concepts`, `scripts/check-concepts.mjs`, `scripts/lib/concept-rules.mjs`
+- 프로토타입(요청 시) 추가: `prototype-builder`, `/build-prototype`, `scripts/check-prototype.mjs`
+- `design/00-spec/`: screens.json(4화면) · concept-matrix.json · fixed-conditions.md · local-sources.json
+- 게이트 2 화면 수: 5개 이상 → screens.json 목록과 일치
+
 ## 아직 원본 그대로인 것 (다음 단계에서 변경 예정)
 
 - 모바일 390×844 전제 (verify-design-rules, figma-audit, check-phase)

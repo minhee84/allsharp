@@ -32,6 +32,7 @@ import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { getArg, hasFlag, createLog } from "./lib/cli.mjs";
 import { parseImageSlots } from "./lib/layout-rules.mjs";
 import { checkReferenceRaw } from "./lib/reference-rules.mjs";
+import { checkConceptsStatic, loadScreens } from "./lib/concept-rules.mjs";
 import { join } from "node:path";
 import {
   CONTRACT_PATH,
@@ -242,13 +243,30 @@ function checkStructure() {
   if (fileExists(screensPath)) {
     const content = readFile(screensPath);
 
-    // 3. 화면 5개 이상 (## 화면 N · ... 형식)
+    // 3. 화면 수 — design/00-spec/screens.json 이 있으면 그 목록이 기준 (ALL#: 4화면 고정)
     const screenCount = (content.match(/^## 화면 \d+/gm) || []).length;
-    results.push({
-      name: "화면 5개 이상",
-      pass: screenCount >= 5,
-      detail: `${screenCount}개 화면 (최소 5개 필요)`,
-    });
+    let spec = null;
+    try {
+      spec = loadScreens();
+    } catch {
+      /* 스펙 없음 → 원본 기준 5개 */
+    }
+    if (spec) {
+      const missing = spec.filter((s) => !content.includes(s.name));
+      results.push({
+        name: `화면 목록 = screens.json (${spec.length}개)`,
+        pass: screenCount === spec.length && !missing.length,
+        detail: missing.length
+          ? `screens.md 에 없는 화면: ${missing.map((s) => s.name).join(", ")}`
+          : `${screenCount}개 화면`,
+      });
+    } else {
+      results.push({
+        name: "화면 5개 이상",
+        pass: screenCount >= 5,
+        detail: `${screenCount}개 화면 (최소 5개 필요)`,
+      });
+    }
 
     // 문서 전체의 단어 개수가 아니라 각 화면의 실제 필드를 검사한다.
     const sections = content.split(/^## 화면 \d+[^\n]*$/m).slice(1);
@@ -310,6 +328,21 @@ function checkStructure() {
     checks: results,
     passed: results.every((r) => r.pass),
   };
+}
+
+// ==================== 게이트 2b: 컨셉 시안 ====================
+
+function checkConcepts() {
+  const results = checkConceptsStatic(".");
+  const selPath = "design/02b-concepts/concept-selection.md";
+  const sel = fileExists(selPath) ? readFile(selPath) : "";
+  const selected = sel.match(/^selected:\s*([ABC])\s*$/m)?.[1];
+  results.push({
+    name: "컨셉 선택 (concept-selection.md)",
+    pass: /^status:\s*selected\s*$/m.test(sel) && !!selected,
+    detail: selected ? `선택: ${selected}` : `${selPath} 에 status: selected · selected: A|B|C (사용자 승인 후)`,
+  });
+  return { phase: "concepts", gate: "2b", checks: results, passed: results.every((r) => r.pass) };
 }
 
 // ==================== 게이트 3: 디자인 규칙 ====================
@@ -916,6 +949,7 @@ function main() {
   const checkers = {
     references: checkReferences,
     structure: checkStructure,
+    concepts: checkConcepts,
     rules: checkRules,
     screens: checkScreens,
   };
@@ -936,7 +970,7 @@ function main() {
     printResult(result);
   } else {
     log(`\n❌ 알 수 없는 phase: ${phase}`, "red");
-    log("사용 가능: references, structure, rules, screens, all", "reset");
+    log("사용 가능: references, structure, concepts, rules, screens, all", "reset");
     process.exit(1);
   }
 

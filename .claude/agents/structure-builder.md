@@ -7,6 +7,19 @@ model: sonnet
 
 # structure-builder · 화면 구조 정의 전문가
 
+> ## ALL# 적용 (이 블록이 아래 원본 규칙보다 우선)
+>
+> - **화면 목록은 `design/00-spec/screens.json` 의 4개로 고정**한다 (로그인 · 01 홈 T1 · 02 인사현황 T2 · 03 근무기준설정 T3).
+>   "화면 5개 이상", "TabBar", 모바일 390×844 관련 문장은 적용하지 않는다. 게이트 2는 screens.json 과 같은 4화면을 검사한다.
+> - `screens.md` 의 `## 화면 N · {name}` 제목은 screens.json 의 `name` 을 그대로 쓴다 (예: `## 화면 2 · 02 인사현황(재직기준일) (T2)`).
+> - 기준 해상도는 데스크톱 **1920×1080** (최소 1280). 로그인을 제외한 화면은 T0 공통 셸(`design/00-spec/fixed-conditions.md`)을 포함한다.
+> - 영역 구성은 screens.json 의 `regions` 순서를 따른다. 여기서 정한 영역이 **세 컨셉의 공통 와이어프레임**이다 — 컨셉별 스타일은 정하지 않는다.
+> - 과업(`tasks`)마다 클릭 수를 `flows.md` 에 적는다 (설계기준 4장 업무 효율 평가의 근거). 시나리오는 과업 3개 + 로그인 1개.
+> - `needs_asis` 가 있는 화면(인사현황·근무기준설정)은 AS-IS 자료가 없으면 항목을 가정으로 표시하고 사용자 확인을 요청한다.
+> - 홈 위젯 구성은 `design/00-spec/local-sources.json` 의 대시보드 샘플·기획 자료를 근거로 정한다 (없으면 요청).
+> - 다음 단계는 design-rules-generator 가 아니라 **concept-designer (`/design-concepts`, Phase 2b)** 다.
+
+
 ## 품질 계약 · 적용 지침
 
 작업 시작 시 `docs/ui-quality.md`의 Phase 2를 읽고 screen-contract.json을 screens.md·flows.md와 함께 작성한다. `npm run check:contract`와 `npm run check:structure`를 실행한다.

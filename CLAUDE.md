@@ -2,7 +2,7 @@
 
 디자이너가 AI와 일관되게 일하기 위한 4단계 파이프라인.
 실행 환경: **Claude Code 전용** (`.claude/agents` · `.claude/skills`).
-대상: 모바일 앱 (iOS/Android, 390×844).
+대상: ALL# 2.0 ERP 데스크톱 (1920×1080, 최소 1280). ⚠️ Phase 3·4 검사 스크립트는 아직 원본의 모바일 390×844 기준이다 (NOTICE.md).
 
 레퍼런스 수집부터 Figma 화면 생성까지, 매 단계 게이트를 통과하며 진행한다.
 자연어로도, 슬래시 명령으로도 동작한다.
@@ -62,12 +62,19 @@ scripts/default-tokens.md의 기본값을 적용하고 산출물에 가정 로�
 ## 표준 워크플로
 
 ```
-Phase 1 · 레퍼런스     → 게이트 1 →
-Phase 2 · 화면 구조    → 게이트 2 →
-Phase 3 · 디자인 규칙  → 게이트 3 →
-Phase 4 · Figma 생성   → 게이트 4 → 🎉 완료
-           (tokens → components → screens)
+Phase 1  · 레퍼런스            → 게이트 1 →
+Phase 2  · 화면 구조 (4화면)    → 게이트 2 →
+Phase 2b · 컨셉 시안 3안 (HTML) → 게이트 2b (사용자가 1안 선택) →
+Phase 3  · 디자인 규칙 (선택안)  → 게이트 3 →
+Phase 4  · Figma 생성 (선택안만) → 게이트 4 → 🎉 완료
+            (tokens → components → screens)
+
+프로토타입 (요청 시에만) · html: 2b 이후 어느 안이든 · figma: Phase 4 이후 선택안
 ```
+
+- 화면은 `design/00-spec/screens.json` 의 4개로 고정: 로그인 · 01 홈 (T1) · 02 인사현황(재직기준일) (T2) · 03 근무기준설정 (T3)
+- 컨셉 3안의 차이는 `design/00-spec/concept-matrix.json` 값뿐. 세 안은 같은 구조·같은 데이터·같은 색
+- 고정 조건은 `design/00-spec/fixed-conditions.md`, 프로젝트 참고 자료(기획 · 마이크로인터랙션 예제 · 대시보드 샘플)는 `design/00-spec/local-sources.json`
 
 각 게이트 통과 없이는 다음 Phase 진입 불가.
 
@@ -80,9 +87,11 @@ Phase 4 · Figma 생성   → 게이트 4 → 🎉 완료
 | 레퍼런스 수집 | "레퍼런스 뽑아줘", "경쟁사 분석"             | reference-collector    | /collect-references |
 | 레퍼런스 분석 | "분석해줘", "패턴 뽑아줘"                    | reference-analyzer     | /analyze-references |
 | 화면 구조     | "화면 구조 짜줘", "화면 목록"                | structure-builder      | /build-structure    |
+| 컨셉 시안     | "컨셉 시안 만들어줘", "3안 만들어줘"         | concept-designer       | /design-concepts    |
 | 디자인 규칙   | "규칙 만들어줘", "디자인 시스템"             | design-rules-generator | /generate-rules     |
 | Figma 생성    | "Figma 화면 만들어줘"                        | figma-builder          | /create-figma       |
 | 최종 검증     | "검증해줘", "audit"                          | design-auditor         | /audit-design       |
+| 프로토타입    | "프로토타입 만들어줘" (요청 시에만)          | prototype-builder      | /build-prototype    |
 | 스냅샷 추출   | (자연어 없음 · 코디네이터가 백그라운드 기동) | snapshot-runner        | (없음)              |
 
 snapshot-runner 는 사용자가 직접 부르는 에이전트가 아니다. figma-builder 가 build-log 에
@@ -99,8 +108,14 @@ design/
 │   └── analysis.md        (분석 + 패턴 통합)
 │
 ├── 02-structure/          ← Phase 2
-│   ├── screens.md         (화면 5개+ 정의)
-│   └── flows.md           (시나리오 2-3개)
+│   ├── screens.md         (screens.json 4화면 정의)
+│   └── flows.md           (과업 3개 + 로그인 · 클릭 수)
+│
+├── 02b-concepts/          ← Phase 2b
+│   ├── shared/            (tokens.base.css · data.js — 세 안 공통)
+│   ├── A/ B/ C/           (concept.css + 4화면 HTML + index.html)
+│   ├── compare.html · concept-review.md
+│   └── concept-selection.md  (사용자 선택 후 · 게이트 2b)
 │
 ├── 03-design-rules/       ← Phase 3 (SSOT)
 │   ├── design-rules.md    ⭐ 유일한 규칙 SSOT
@@ -120,6 +135,8 @@ design/
 │   ├── fix-list.md             (audit FAIL 시만 생성)
 │   └── screenshots/            (이미지까지 채워진 완성본)
 │
+├── 05-prototype/          ← 요청 시 (html/{안}/ · figma/prototype-map.md)
+│
 └── assets/                ← 이미지 라이브러리 (사람이 채운다 · 에이전트 생성 금지)
     └── characters/        (§I 표의 `파일` 열이 가리키는 곳 · check-assets.mjs 가 대조)
 ```
@@ -131,7 +148,9 @@ design/
 - **design-rules.md `status: confirmed` 없이 figma-builder 실행 금지**
 - **토큰은 primitive → semantic 2계층. semantic 에 값 직결 금지**
 - **컴포넌트·화면은 semantic 토큰만 바인딩** (primitive 직접 사용 금지)
-- **Phase 순서 건너뛰기 금지** (1 → 2 → 3 → 4 순차)
+- **Phase 순서 건너뛰기 금지** (1 → 2 → 2b → 3 → 4 순차)
+- **concept-selection.md (`status: selected`) 없이 Phase 3 진입 금지 · 사용자 선택 없이 이 파일 작성 금지**
+- **프로토타입은 사용자가 요청할 때만 만든다**
 - **게이트 실패 시 다음 Phase 진입 금지**
 - **design/03-design-rules/design-rules.md 는 유일한 규칙 SSOT**
 - **Figma 파일은 사용자가 만든 것만 사용한다** (에이전트가 새 파일 생성 금지)

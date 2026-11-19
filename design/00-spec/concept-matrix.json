@@ -1,0 +1,65 @@
+{
+  "_comment": "설계기준 3장 표. 컨셉 단계에서는 세 안 모두 같은 주색(ALL# 블루)·같은 상태색·같은 그리드 밀도(28/30)를 쓴다. 컨셉이 바꾸는 것은 아래 값뿐이며 모두 착수보고 스케일 안에서 고른다.",
+  "shared": {
+    "primary_color": "ALL# Blue (세 안 동일)",
+    "status_colors": "착수보고 4색 고정",
+    "grid": { "row": 28, "header": 30 },
+    "data": "design/02b-concepts/shared/data.js (세 안 동일)"
+  },
+  "concepts": {
+    "A": {
+      "name": "KRDS + ALL#",
+      "goal": "공공 신뢰감, 표준 준수, 학습 부담 최소",
+      "reference": "KRDS",
+      "widget_padding": "space-4 (16)",
+      "radius": { "control": 4, "card": 8 },
+      "elevation": ["E0", "E1"],
+      "surface": "테두리 중심",
+      "icons": "Lucide 라인",
+      "chart": "막대·진행 바, 범례 명확",
+      "dashboard": "할 일 우선 + 주제 탭",
+      "motion": { "range": ["fast", "base"], "ms": [150, 200], "character": "최소·명료: 색·테두리 변화" },
+      "shortcut_display": "툴팁 수준",
+      "allsharp_i": "플로팅 버튼 + 라벨('ALL#_i에게 물어보기 Alt+I')",
+      "copy": "명사형·존댓말",
+      "risks": ["무난해서 상품성 부족", "여백 과다"],
+      "notes": ["KRDS 컴포넌트 패턴(공식 배너·브레드크럼·버튼·입력 규격) 기본, ALL# 브랜드는 주색·로고에서만", "KRDS는 대국민용이라 그리드·폼 밀도는 프로젝트 기준으로 보완"]
+    },
+    "B": {
+      "name": "상업용 ERP + ALL#",
+      "goal": "친근함, 개인화, 상품성(경쟁 대응)",
+      "reference": "토스·플렉스 계열",
+      "widget_padding": "space-5 (24)",
+      "radius": { "control": 8, "card": 8, "note": "12 이상은 스케일 추가 승인 필요 — 쓰면 시안에 별도 표시" },
+      "elevation": ["E1", "E2"],
+      "surface": "부드러운 그림자, 글래스는 GNB·KPI 카드 등 데이터 없는 면에만",
+      "icons": "Lucide 라인 + 3D 아이콘은 KPI·빈 화면에만",
+      "chart": "영역·도넛 허용, 부드러운 곡선",
+      "dashboard": "위젯 개인화(역할별 프리셋)",
+      "motion": { "range": ["base", "slow"], "ms": [200, 300], "character": "부드러움: 숫자 변화 강조, 아이콘 반응" },
+      "shortcut_display": "툴팁 수준",
+      "allsharp_i": "플로팅 버튼 + 상황 제안 카드",
+      "copy": "명사형·존댓말 (해요체는 리뷰 안건으로 별도 제시)",
+      "risks": ["장식이 정보 밀도·대비를 해침", "backdrop-filter 성능"],
+      "notes": ["3D·글래스는 첫인상 영역(로그인·대시보드 KPI·빈 화면)에만, T2~T6 업무 화면에는 쓰지 않는다", "반투명 면 위 텍스트 대비 4.5:1"]
+    },
+    "C": {
+      "name": "해외 ERP + ALL#",
+      "goal": "업무 처리 속도, 고밀도, 전문가용",
+      "reference": "MS Dynamics·SAP Fiori 계열",
+      "widget_padding": "space-3 (12)",
+      "radius": { "control": 2, "card": 4 },
+      "elevation": ["E0"],
+      "surface": "평면·구분선 중심, 어두운 GNB",
+      "icons": "Lucide 라인, 장식 없음",
+      "chart": "스파크라인·불릿 차트, 기준선 중심",
+      "dashboard": "예외 기반(기준 벗어난 지표만 상단) + 목록·상세",
+      "motion": { "range": ["fast"], "ms": [150], "character": "즉시성: 키보드 조작 피드백 중심" },
+      "shortcut_display": "화면에 상시 표시(승인 A · 반려 R · 이동 J/K)",
+      "allsharp_i": "GNB 버튼 + 오른쪽 상시 패널(화면 데이터 참조 칩)",
+      "copy": "명사형·존댓말",
+      "risks": ["학습 부담", "강조색 과다", "아이콘 전용 레일의 접근성"],
+      "notes": ["LNB는 아이콘+라벨 기본(T0 규칙)", "강조색은 주색 1 + 상태색 4로 제한", "승인·반려 버튼에 상태색을 쓰지 않음(행동색과 상태색 분리)"]
+    }
+  }
+}

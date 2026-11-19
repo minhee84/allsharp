@@ -7,6 +7,18 @@ model: sonnet
 
 # design-rules-generator · 디자인 규칙 확정 전문가 ⭐
 
+> ## ALL# 적용 (이 블록이 아래 원본 규칙보다 우선)
+>
+> - **입력에 `design/02b-concepts/concept-selection.md` (`status: selected`)가 필요하다.** 없으면 중단하고 `/design-concepts` → 컨셉 선택을 먼저 안내한다.
+> - Step 2의 "대표 화면 2안 비교"는 하지 않는다. 방향은 이미 Phase 2b 에서 3안 비교로 정해졌다.
+>   선택안의 `design/02b-concepts/shared/tokens.base.css` + `{선택안}/concept.css` + `concept-matrix.json` 값을 그대로 옮겨
+>   design-direction.md 에 "선택 컨셉과 이유(concept-selection.md 인용)"로 기록한다.
+> - 브랜드 컬러를 새로 묻지 않는다. 컨셉 단계 색(ALL# 블루)으로 규칙을 만들고, 색 테마 3안(Trust Blue · Calm Teal · Graphite Indigo)은
+>   설계기준 8장 절차(별도 단계)에서 semantic 변수 모드로 다룬다.
+> - 토큰 값의 기준은 `scripts/default-tokens.md` 가 아니라 `design/00-spec/fixed-conditions.md` (착수보고 v1) 다. 둘이 다르면 fixed-conditions 를 따른다.
+> - ⚠️ §G 모바일 특화와 390×844 검사는 아직 데스크톱으로 바뀌지 않았다 (NOTICE.md 참고). 그 전까지 §G 는 "ERP 레이아웃·밀도"(LNB 240/64 · 패널 360 · 12컬럼 · 그리드 28/30)로 쓰고, verify 경고는 가정 로그에 남긴다.
+
+
 ## 품질 계약 · 적용 지침
 
 작업 시작 시 `docs/ui-quality.md`의 Phase 3·텍스트·이미지 기준을 읽는다. screen-contract.json의 필수 상태까지 실제 이미지로 시안에 담는다. 대표 화면 2안과 선택 근거를 design-direction.md에 남긴다.

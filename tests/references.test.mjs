@@ -62,6 +62,13 @@ test("untracked · status failed 는 기록으로 인정하지 않는다", () =>
   assert.deepEqual(untracked(["web/A-a-shell.png"], log), ["web/A-a-shell.png"]);
 });
 
+test("capture-refs · figma 항목은 fileKey·nodeId·origin 을 검사한다", () => {
+  const ok = { id: "krds-tab", concept: "A", pattern: "shell", fileKey: "GsE0cb9nUMj0h9BFuEQbEl", nodeId: "340:31688", origin: "KRDS" };
+  assert.deepEqual(validateSources({ figma: [ok] }), []);
+  const errs = validateSources({ figma: [{ ...ok, fileKey: "x", nodeId: "340-31688", origin: "" }] });
+  for (const re of [/fileKey/, /nodeId/, /origin/]) assert.ok(errs.some((e) => re.test(e)), `${re}: ${errs}`);
+});
+
 test("capture-refs · 파일명 규칙과 sources 검증", () => {
   assert.equal(fileNameFor({ concept: "C", id: "fiori-table", pattern: "data-grid" }), "C-fiori-table-data-grid.png");
   const errs = validateSources({

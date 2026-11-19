@@ -1,22 +1,250 @@
 {
   "_comment": "DRAFT - 사용자 승인 전. URL 은 네트워크 차단으로 실존 미확인(WebFetch 실패). concept: A=KRDS, B=상업용 ERP, C=해외 ERP, common=공통",
-  "viewport": { "width": 1920, "height": 1080, "deviceScaleFactor": 1 },
+  "viewport": {
+    "width": 1920,
+    "height": 1080,
+    "deviceScaleFactor": 1
+  },
   "maxHeight": 4000,
-  "dismissSelectors": ["button:has-text('Accept')", "button:has-text('동의')", "#onetrust-accept-btn-handler"],
+  "dismissSelectors": [
+    "button:has-text('Accept')",
+    "button:has-text('동의')",
+    "#onetrust-accept-btn-handler"
+  ],
   "sources": [
-    { "id": "krds-home", "concept": "A", "pattern": "shell", "url": "https://www.krds.go.kr/", "capture": "fullpage", "note": "공식 헤더·브레드크럼·버튼·입력 규격, 공공 톤" },
-    { "id": "carbon-data-table", "concept": "C", "pattern": "data-grid", "url": "https://carbondesignsystem.com/components/data-table/usage/", "capture": "fullpage", "note": "행 높이 옵션(밀도), 일괄 작업 바" },
-    { "id": "fiori-design", "concept": "C", "pattern": "shell", "url": "https://experience.sap.com/fiori-design-web/", "capture": "fullpage", "note": "엔터프라이즈 셸·테이블 밀도·상태 표현" },
-    { "id": "fluent2", "concept": "C", "pattern": "shell", "url": "https://fluent2.microsoft.design/", "capture": "viewport", "note": "해외 제품군 셸·여백" },
-    { "id": "workday-canvas", "concept": "C", "pattern": "form", "url": "https://canvas.workday.com/", "capture": "viewport", "note": "HR 계열 폼·테이블 패턴 (하위 경로 미확인)" },
-    { "id": "antd-table", "concept": "B", "pattern": "data-grid", "url": "https://ant.design/components/table", "capture": "fullpage", "note": "상업용 어드민/ERP 류 테이블 밀도 (B 대체 근거: 실제 ERP는 로그인 필요)" },
-    { "id": "antd-form", "concept": "B", "pattern": "form", "url": "https://ant.design/components/form", "capture": "fullpage", "note": "설정 화면 폼 레이아웃" },
-    { "id": "amaranth-promo", "concept": "B", "pattern": "dashboard", "url": "https://www.amaranth10.com/", "capture": "fullpage", "note": "공개 소개 페이지의 제품 화면 (로그인 불필요 시)" },
-    { "id": "dhtmlx-snippets", "concept": "common", "pattern": "data-grid", "url": "https://snippet.dhtmlx.com/", "capture": "viewport", "note": "DHTMLX 9.x 기본 스킨 확인용" }
+    {
+      "id": "krds-home",
+      "concept": "A",
+      "pattern": "shell",
+      "url": "https://www.krds.go.kr/",
+      "capture": "fullpage",
+      "note": "공식 헤더·브레드크럼·버튼·입력 규격, 공공 톤"
+    },
+    {
+      "id": "carbon-data-table",
+      "concept": "C",
+      "pattern": "data-grid",
+      "url": "https://carbondesignsystem.com/components/data-table/usage/",
+      "capture": "fullpage",
+      "note": "행 높이 옵션(밀도), 일괄 작업 바"
+    },
+    {
+      "id": "fiori-design",
+      "concept": "C",
+      "pattern": "shell",
+      "url": "https://experience.sap.com/fiori-design-web/",
+      "capture": "fullpage",
+      "note": "엔터프라이즈 셸·테이블 밀도·상태 표현"
+    },
+    {
+      "id": "fluent2",
+      "concept": "C",
+      "pattern": "shell",
+      "url": "https://fluent2.microsoft.design/",
+      "capture": "viewport",
+      "note": "해외 제품군 셸·여백"
+    },
+    {
+      "id": "workday-canvas",
+      "concept": "C",
+      "pattern": "form",
+      "url": "https://canvas.workday.com/",
+      "capture": "viewport",
+      "note": "HR 계열 폼·테이블 패턴 (하위 경로 미확인)"
+    },
+    {
+      "id": "antd-table",
+      "concept": "B",
+      "pattern": "data-grid",
+      "url": "https://ant.design/components/table",
+      "capture": "fullpage",
+      "note": "상업용 어드민/ERP 류 테이블 밀도 (B 대체 근거: 실제 ERP는 로그인 필요)"
+    },
+    {
+      "id": "antd-form",
+      "concept": "B",
+      "pattern": "form",
+      "url": "https://ant.design/components/form",
+      "capture": "fullpage",
+      "note": "설정 화면 폼 레이아웃"
+    },
+    {
+      "id": "amaranth-promo",
+      "concept": "B",
+      "pattern": "dashboard",
+      "url": "https://www.amaranth10.com/",
+      "capture": "fullpage",
+      "note": "공개 소개 페이지의 제품 화면 (로그인 불필요 시)"
+    },
+    {
+      "id": "dhtmlx-snippets",
+      "concept": "common",
+      "pattern": "data-grid",
+      "url": "https://snippet.dhtmlx.com/",
+      "capture": "viewport",
+      "note": "DHTMLX 9.x 기본 스킨 확인용"
+    }
   ],
   "manual": [
-    { "id": "amaranth-dashboard", "concept": "B", "pattern": "dashboard", "file": "raw/manual/B-amaranth-dashboard-dashboard.png", "note": "로그인 필요 -> 사람이 캡처" },
-    { "id": "krds-form", "concept": "A", "pattern": "form", "file": "raw/manual/A-krds-form-form.png", "note": "KRDS 입력·폼 컴포넌트 페이지" },
-    { "id": "krds-table", "concept": "A", "pattern": "data-grid", "file": "raw/manual/A-krds-table-data-grid.png", "note": "KRDS 표 컴포넌트 페이지" }
+    {
+      "id": "amaranth-dashboard",
+      "concept": "B",
+      "pattern": "dashboard",
+      "file": "raw/manual/B-amaranth-dashboard-dashboard.png",
+      "note": "로그인 필요 -> 사람이 캡처"
+    },
+    {
+      "id": "krds-form",
+      "concept": "A",
+      "pattern": "form",
+      "file": "raw/manual/A-krds-form-form.png",
+      "note": "KRDS 입력·폼 컴포넌트 페이지"
+    }
+  ],
+  "figma": [
+    {
+      "id": "krds-display-settings",
+      "concept": "A",
+      "pattern": "other",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:473",
+      "origin": "KRDS v1.0.0 Figma",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "krds-typography",
+      "concept": "A",
+      "pattern": "other",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:479",
+      "origin": "KRDS Figma — 스타일가이드_타이포그래피",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "krds-table",
+      "concept": "A",
+      "pattern": "data-grid",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:484",
+      "origin": "KRDS Figma — Table(표)",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "toss-tds-keyvisual",
+      "concept": "B",
+      "pattern": "other",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:491",
+      "origin": "앱인토스 TDS",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "dribbble-glass-dashboard",
+      "concept": "B",
+      "pattern": "dashboard",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:496",
+      "origin": "Dribbble — Glassmorphism Dashboard - UI Design (Leon Abramovic)",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "ms365-copilot-glass",
+      "concept": "B",
+      "pattern": "other",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:501",
+      "origin": "Microsoft Design",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "flex-modal",
+      "concept": "B",
+      "pattern": "form",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:506",
+      "origin": "flex 헬프센터",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "fiori-horizon-worklist",
+      "concept": "C",
+      "pattern": "data-grid",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:519",
+      "origin": "SAP Community",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "ms365-dashboard",
+      "concept": "C",
+      "pattern": "dashboard",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:524",
+      "origin": "Microsoft Design",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "mercury-dashboard",
+      "concept": "common",
+      "pattern": "dashboard",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:532",
+      "origin": "Mercury Demo",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "mercury-transactions",
+      "concept": "common",
+      "pattern": "data-grid",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:539",
+      "origin": "Mercury Demo",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "attio-records",
+      "concept": "common",
+      "pattern": "data-grid",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:544",
+      "origin": "Attio",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "mercury-insights",
+      "concept": "common",
+      "pattern": "chart",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:551",
+      "origin": "Mercury Demo",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "tremor-charts",
+      "concept": "common",
+      "pattern": "chart",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:556",
+      "origin": "Tremor",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "tremor-microviz",
+      "concept": "common",
+      "pattern": "chart",
+      "fileKey": "oWDrnexiwnDqEUn3Tg7gdT",
+      "nodeId": "8:561",
+      "origin": "Tremor (보드에 이 이미지의 출처 표기 없음 — 확인 필요)",
+      "board": "ALL# 2.0 UI/UX 리뉴얼 · 레퍼런스 보드"
+    },
+    {
+      "id": "krds-tab",
+      "concept": "A",
+      "pattern": "shell",
+      "fileKey": "GsE0cb9nUMj0h9BFuEQbEl",
+      "nodeId": "340:31688",
+      "origin": "KRDS v1.0.0 (Community) — Tab(탭) component",
+      "board": "KRDS_v1.0.0 (Community)"
+    }
   ]
 }

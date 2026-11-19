@@ -15,6 +15,25 @@ model: sonnet
 | ① 자체 자료 — AS-IS 화면, 의견접수, 마이크로인터랙션 예제 | `raw/internal/` | 사람이 넣음 (에이전트는 목록만 확인) |
 | ② 공개 디자인 시스템·데모 페이지 자동 캡처 | `raw/web/` | `npm run capture:refs` |
 | ③ 로그인이 필요한 서비스 수동 캡처 | `raw/manual/` | 사람이 넣음 (에이전트는 요청 목록만 작성) |
+| ④ 사용자가 준 Figma 링크 (레퍼런스 보드 · 커뮤니티 키트) | `raw/figma/` | Figma MCP `get_screenshot` → curl |
+
+### ④ Figma 링크 처리
+
+사용자가 Figma URL 을 주면 웹 캡처보다 이 경로를 먼저 쓴다 (클라우드 세션에서도 동작).
+
+1. URL 에서 fileKey · node-id 를 뽑는다 (`node-id=8-473` → `8:473`). node-id 가 없으면 프레임 링크를 요청한다.
+2. `get_metadata` 로 구조를 보고 레퍼런스 이미지 프레임을 찾는다.
+   레퍼런스 보드는 프레임 이름 `img-NN · …` 과 옆의 `출처: …` 텍스트를 한 쌍으로 읽는다.
+   **출처 표기가 없는 이미지는 다른 블록의 출처를 가져다 쓰지 말고 "확인 필요"로 기록한다.**
+3. `get_screenshot`(`contentsOnly: true`, `maxDimension: 1920`) → 받은 URL 을 바로 curl 로 저장한다 (URL 은 금방 만료된다).
+   저장 이름: `raw/figma/{concept}-{id}-{pattern}.png`
+4. `sources.json` 의 `figma` 배열에 `{id, concept, pattern, fileKey, nodeId, origin}` 를 적고,
+   `raw/sources.log.json` 의 `entries` 에 `file`, `url`, `status: "ok"`, `via: "Figma MCP get_screenshot"` 을 남긴다.
+5. 커뮤니티 파일은 사용자 드래프트로 복제된 것만 열린다. 안 열리면 복제를 요청한다.
+6. 사용자가 만든 **시안**(레퍼런스가 아닌 것)은 `raw/` 가 아니라 `design/01-references/concept-drafts/{컨셉}/` 에 둔다.
+   시안은 레퍼런스 장수·AS-IS 장수에 넣지 않는다.
+
+`www.figma.com` 다운로드가 막히면(403) 세션 환경의 허용 호스트에 `www.figma.com` 이 필요하다.
 
 **절대 원칙:**
 

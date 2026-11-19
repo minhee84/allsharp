@@ -37,7 +37,7 @@ export function fileNameFor(src) {
 export function validateSources(cfg) {
   const errors = [];
   const ids = new Set();
-  for (const [i, s] of [...(cfg.sources || []), ...(cfg.manual || [])].entries()) {
+  for (const [i, s] of [...(cfg.sources || []), ...(cfg.manual || []), ...(cfg.figma || [])].entries()) {
     const where = `#${i + 1} (${s.id ?? "id 없음"})`;
     if (!s.id || !/^[a-z0-9-]+$/.test(s.id)) errors.push(`${where}: id 는 소문자 kebab-case`);
     if (ids.has(s.id)) errors.push(`${where}: id 중복`);
@@ -51,6 +51,12 @@ export function validateSources(cfg) {
   }
   for (const m of cfg.manual || []) {
     if (!m.file) errors.push(`${m.id}: manual 항목은 file 필수 (raw/manual/ 아래)`);
+  }
+  // figma 항목은 이 스크립트가 캡처하지 않는다 (Figma MCP 로 reference-collector 가 받는다). 형식만 검사.
+  for (const f of cfg.figma || []) {
+    if (!/^[0-9a-zA-Z]{22,128}$/.test(f.fileKey || "")) errors.push(`${f.id}: figma 항목은 fileKey 필수`);
+    if (!/^\d+:\d+$/.test(f.nodeId || "")) errors.push(`${f.id}: figma nodeId 는 "123:456" 형식`);
+    if (!f.origin) errors.push(`${f.id}: figma 항목은 origin(원 출처) 필수`);
   }
   return errors;
 }

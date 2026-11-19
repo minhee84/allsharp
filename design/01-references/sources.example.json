@@ -1,0 +1,64 @@
+{
+  "_comment": "이 파일을 sources.json 으로 복사해 쓴다. URL 은 예시이며 첫 실행 때 실제 주소를 확인한다. concept: A=KRDS, B=상업용 ERP, C=해외 ERP, common=공통(그리드 등)",
+  "viewport": { "width": 1920, "height": 1080, "deviceScaleFactor": 1 },
+  "maxHeight": 4000,
+  "dismissSelectors": ["button:has-text('Accept')", "button:has-text('동의')", "#onetrust-accept-btn-handler"],
+  "sources": [
+    {
+      "id": "krds-components",
+      "concept": "A",
+      "pattern": "shell",
+      "url": "https://www.krds.go.kr/",
+      "capture": "fullpage",
+      "note": "공식 배너, 브레드크럼, 버튼·입력 규격"
+    },
+    {
+      "id": "fiori-table",
+      "concept": "C",
+      "pattern": "data-grid",
+      "url": "https://experience.sap.com/fiori-design-web/",
+      "capture": "fullpage",
+      "note": "테이블 밀도, 헤더 툴바, 상태 표현"
+    },
+    {
+      "id": "carbon-data-table",
+      "concept": "C",
+      "pattern": "data-grid",
+      "url": "https://carbondesignsystem.com/components/data-table/usage/",
+      "capture": "fullpage",
+      "note": "행 높이 옵션(밀도), 일괄 작업 바"
+    },
+    {
+      "id": "fluent2",
+      "concept": "C",
+      "pattern": "shell",
+      "url": "https://fluent2.microsoft.design/",
+      "capture": "viewport"
+    },
+    {
+      "id": "toss-tech",
+      "concept": "B",
+      "pattern": "other",
+      "url": "https://toss.tech/",
+      "capture": "viewport",
+      "note": "타이포·여백·문구 톤"
+    },
+    {
+      "id": "dhtmlx-grid",
+      "concept": "common",
+      "pattern": "data-grid",
+      "url": "https://snippet.dhtmlx.com/",
+      "capture": "viewport",
+      "note": "DHTMLX 9.x 기본 스킨 확인용"
+    }
+  ],
+  "manual": [
+    {
+      "id": "amaranth-dashboard",
+      "concept": "B",
+      "pattern": "dashboard",
+      "file": "raw/manual/B-amaranth-dashboard-dashboard.png",
+      "note": "로그인 필요 → 사람이 캡처"
+    }
+  ]
+}

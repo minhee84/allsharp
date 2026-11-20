@@ -24,6 +24,14 @@
       "repo": "design/00-spec/sources/03-dashboard-samples",
       "used_by": ["structure-builder", "concept-designer"],
       "use_for": ["홈 위젯 영역·항목(AS-IS 5개 영역)", "세 안 공통 위젯 배치", "차트 규칙(빠진 월·진행 중 월) 예시"]
+    },
+    {
+      "id": "screen-templates",
+      "role": "화면 템플릿 — index.html (AS-IS 120개 화면 분석, 8개 유형 T1~T8·비중·대메뉴별 분포·시사점), ERP 화면 템플릿 개선안.html (5종 템플릿 리스트·분할·목록+상세폼·대상 상세·계층 코드 동작 샘플과 개선 포인트)",
+      "local": "C:\\Users\\박민희\\Desktop\\클로드\\3300.UI,UX 프로젝트\\02. 화면 템플릿\\ALL#PLUS 화면 템플릿 유형",
+      "repo": "design/00-spec/sources/02-screen-templates",
+      "used_by": ["structure-builder", "concept-designer", "design-rules-generator", "prototype-builder"],
+      "use_for": ["업무 화면을 5종 템플릿 중 하나로 배정", "템플릿별 개선 포인트 반영(fixed-conditions.md '화면 템플릿' 절)", "AS-IS 셸 구조(버튼바·조회영역·그리드·입력폼) 대조"]
     }
   ]
 }

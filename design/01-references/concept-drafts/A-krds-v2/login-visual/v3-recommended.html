@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그인 · 3안 추천 (차분한 물결)</title>
+<link rel="stylesheet" href="login-common.css">
+<style>
+  :root { --panel: #F1F5FB; --panel-line: #DCE5F2; }
+  :root[data-theme="dark"] { --panel: #0E1724; --panel-line: #1F2B3B; }
+  .visual { background: var(--panel); border-right: 1px solid var(--panel-line); display: flex; flex-direction: column; padding: 48px; }
+  #wave { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; align-self: flex-start; border: 1px solid var(--border); border-radius: var(--r4); background: var(--surface); color: var(--text-2); font-size: 12px; font-weight: 600; }
+  .chip svg { width: 16px; height: 16px; stroke-width: 1.5; color: var(--action); }
+  .copy { margin-top: 22vh; }
+  .copy h2 { font-size: 44px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+  .copy h2 em { font-style: normal; color: var(--action); }
+  :root[data-theme="dark"] .copy h2 em { color: var(--primary-400); }
+  .copy p { margin-top: 16px; font-size: 17px; line-height: 26px; color: var(--text-2); }
+  .copy > * { opacity: 0; transform: translateY(8px); animation: rise var(--slow) var(--ease) forwards; }
+  .copy p { animation-delay: 120ms; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  /* 달라진 점 — 한 번에 1건 */
+  .news { margin-top: auto; max-width: 520px; border: 1px solid var(--border); border-radius: var(--r8); background: var(--surface); box-shadow: 0 1px 2px rgba(17,24,39,.06); }
+  .news header { display: flex; align-items: center; justify-content: space-between; height: 40px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--text-2); }
+  .news nav { display: flex; align-items: center; gap: 2px; font-size: 12px; color: var(--text-3); font-weight: 500; }
+  .news nav span { min-width: 36px; text-align: center; }
+  .news nav button { display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: var(--r4); background: none; color: var(--text-2); cursor: pointer; }
+  .news nav button:hover { background: var(--bg-subtle); }
+  .news nav svg { width: 16px; height: 16px; stroke-width: 1.5; }
+  .item { position: relative; height: 80px; overflow: hidden; }
+  .item > div { position: absolute; inset: 0; display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 12px; padding: 0 16px; transition: opacity var(--moderate) var(--ease), transform var(--moderate) var(--ease); }
+  .item > div.out { opacity: 0; transform: translateY(-12px); }
+  .item > div.in { opacity: 0; transform: translateY(12px); }
+  .item .ic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r8); background: var(--primary-50); color: var(--action); }
+  :root[data-theme="dark"] .item .ic { background: rgba(96,165,250,.12); color: var(--primary-400); }
+  .item .ic svg { width: 20px; height: 20px; stroke-width: 1.5; }
+  .item b { display: block; font-size: 15px; line-height: 22px; color: var(--text); }
+  .item small { display: block; font-size: 13px; line-height: 18px; color: var(--text-3); }
+  .item kbd { height: 24px; padding: 0 8px; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: var(--r4); font-family: inherit; font-size: 12px; line-height: 22px; font-weight: 600; color: var(--text-2); }
+  .bar { height: 2px; background: var(--panel-line); border-radius: 0 0 var(--r8) var(--r8); overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--action); transform-origin: left; transform: scaleX(0); }
+  .bar i.run { animation: fill var(--dur) linear forwards; }
+  .bar i.hold { animation-play-state: paused; }
+  @keyframes fill { to { transform: scaleX(1); } }
+</style>
+</head>
+<body>
+<div class="login">
+  <section class="visual" aria-label="ALL# 2.0 소개">
+    <canvas id="wave" aria-hidden="true"></canvas>
+    <span class="chip"><i data-lucide="building-2"></i>ALL# 통합업무시스템 2.0</span>
+    <div class="copy">
+      <h2>오픈소스로 쉽고,<br><em>편리한</em> 공공기관 ERP</h2>
+      <p>결재·인사·복무·재무를 하나의 계정으로 처리하세요.</p>
+    </div>
+    <div class="news" aria-roledescription="carousel" aria-label="ALL# 2.0에서 달라진 점">
+      <header>ALL# 2.0에서 달라진 점
+        <nav>
+          <button type="button" id="prev" aria-label="이전"><i data-lucide="chevron-left"></i></button>
+          <span id="cnt">1 / 6</span>
+          <button type="button" id="next" aria-label="다음"><i data-lucide="chevron-right"></i></button>
+        </nav>
+      </header>
+      <div class="item" id="item" aria-live="polite"></div>
+      <div class="bar"><i id="bar"></i></div>
+    </div>
+  </section>
+  <main class="form-side"></main>
+</div>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="login-form.js"></script>
+<script>
+(function () {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- 달라진 점 (Figma C안 34:2042 문구) ---------- */
+  const NEWS = [
+    ["search", "통합 검색", "메뉴·기능·사원을 한 입력창에서 찾고, 초성으로도 검색합니다", "Ctrl+K"],
+    ["clock-3", "출퇴근 버튼", "상단 GNB에 늘 있어 어느 화면에서든 바로 기록합니다"],
+    ["layers", "MDI 탭", "저장하지 않은 탭은 ●로 표시하고, 10개를 넘으면 +N 목록으로 모읍니다"],
+    ["circle-help", "화면 도움말", "화면마다 처리 순서·필수 항목·오류 해결 방법을 안내합니다"],
+    ["sun-moon", "테마", "다크·화이트 모드를 골라 눈의 피로를 줄입니다"],
+    ["sparkles", "ALL#_i", "현재 화면의 데이터를 참고해 업무를 돕는 AI 도우미입니다", "Alt+I"],
+  ];
+  const DUR = 8000, itemEl = document.getElementById("item"), bar = document.getElementById("bar"), cnt = document.getElementById("cnt");
+  document.querySelector(".news").style.setProperty("--dur", DUR + "ms");
+  let cur = -1, timer, startAt, left = DUR, typing = false, hover = false;
+  const html = ([ic, t, d, k]) => `<div class="in"><span class="ic"><i data-lucide="${ic}"></i></span><span><b>${t}</b><small>${d}</small></span>${k ? `<kbd>${k}</kbd>` : "<span></span>"}</div>`;
+  function show(i, dir = 1) {
+    i = (i + NEWS.length) % NEWS.length; if (i === cur) return; cur = i;
+    // 빠르게 넘겨도 1건만 남도록: 이미 나가는 중인 항목은 즉시 지우고, 나머지는 모두 퇴장
+    [...itemEl.children].forEach((old) => {
+      if (old.dataset.leaving) { old.remove(); return; }
+      old.dataset.leaving = "1"; old.classList.add("out"); old.style.transform = `translateY(${-12 * dir}px)`;
+      setTimeout(() => old.remove(), 260);
+    });
+    itemEl.insertAdjacentHTML("beforeend", html(NEWS[i]));
+    const n = itemEl.lastElementChild; n.style.transform = `translateY(${12 * dir}px)`;
+    lucide.createIcons();
+    requestAnimationFrame(() => requestAnimationFrame(() => { n.classList.remove("in"); n.style.transform = ""; }));
+    cnt.textContent = `${i + 1} / ${NEWS.length}`;
+    left = DUR; bar.classList.remove("run", "hold"); void bar.offsetWidth; run();
+  }
+  const held = () => typing || hover || reduce;
+  function run() { clearTimeout(timer); if (held()) { bar.classList.toggle("run", !reduce); bar.classList.add("hold"); return; } bar.classList.add("run"); bar.classList.remove("hold"); startAt = performance.now(); timer = setTimeout(() => show(cur + 1), left); }
+  function hold() { clearTimeout(timer); left = Math.max(0, left - (performance.now() - startAt)); bar.classList.add("hold"); }
+  document.getElementById("prev").onclick = () => show(cur - 1, -1);
+  document.getElementById("next").onclick = () => show(cur + 1, 1);
+  const news = document.querySelector(".news");
+  news.addEventListener("mouseenter", () => { hover = true; hold(); });
+  news.addEventListener("mouseleave", () => { hover = false; run(); });
+  addEventListener("formfocus", (e) => { typing = e.detail; typing ? hold() : run(); });
+  show(0);
+
+  /* ---------- BI 물결 (Canvas 2D) ---------- */
+  const panel = document.querySelector(".visual"), cv = document.getElementById("wave"), g = cv.getContext("2d");
+  let W, H, dpr, colA, colB, mx = .5, my = .6, tmx = .5, tmy = .6, calm = 0, tCalm = 0;
+  function readColors() {
+    const dark = document.documentElement.dataset.theme === "dark";
+    colA = dark ? [96, 165, 250] : [29, 78, 216];   // primary 400 / 700
+    colB = dark ? [147, 197, 253] : [96, 165, 250]; // primary 300 / 400
+  }
+  function resize() { dpr = Math.min(devicePixelRatio, 2); W = panel.clientWidth; H = panel.clientHeight; cv.width = W * dpr; cv.height = H * dpr; g.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  addEventListener("resize", resize); addEventListener("themechange", readColors); resize(); readColors();
+  panel.addEventListener("pointermove", (e) => { const b = panel.getBoundingClientRect(); tmx = (e.clientX - b.left) / b.width; tmy = (e.clientY - b.top) / b.height; });
+  panel.addEventListener("pointerleave", () => { tmx = .5; tmy = .6; });
+  addEventListener("formfocus", (e) => { tCalm = e.detail ? 1 : 0; });
+
+  const LINES = 18;
+  function draw(t) {
+    mx += (tmx - mx) * .04; my += (tmy - my) * .04; calm += (tCalm - calm) * .03;
+    g.clearRect(0, 0, W, H);
+    const amp = (1 - calm * .6), sp = reduce ? 0 : (1 - calm * .8);
+    for (let i = 0; i < LINES; i++) {
+      const k = i / (LINES - 1);
+      const baseY = H * (.56 + k * .2);
+      const c = k < .5 ? colA : colB;
+      const alpha = (.06 + (1 - Math.abs(k - .35) * 1.6) * .22) * (1 - calm * .4);
+      g.beginPath();
+      for (let x = -20; x <= W + 20; x += 8) {
+        const u = x / W;
+        // BI 스우시처럼 왼쪽 아래 → 오른쪽 위로 휘는 곡선
+        const swoosh = -Math.pow(Math.max(u, 0), 1.6) * H * .22;
+        const wave = Math.sin(u * 3.2 + t * .00035 * sp + k * 1.4) * 18 * amp + Math.sin(u * 7 - t * .0006 * sp + k * 3) * 5 * amp;
+        const pull = Math.exp(-Math.pow((u - mx) * 4, 2)) * (my * H - baseY) * .08 * amp;
+        const y = baseY + swoosh + wave + pull + k * k * 30;
+        x === -20 ? g.moveTo(x, y) : g.lineTo(x, y);
+      }
+      g.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0.03, alpha).toFixed(3)})`;
+      g.lineWidth = i % 5 === 0 ? 1.6 : 1;
+      g.stroke();
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+  lucide.createIcons();
+})();
+</script>
+</body>
+</html>

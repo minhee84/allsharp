@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그인 · 1안 인터랙션형</title>
+<link rel="stylesheet" href="login-common.css">
+<style>
+  .visual { background: radial-gradient(120% 90% at 70% 70%, #0E5AA6 0%, var(--navy) 45%, var(--navy-deep) 100%); color: #fff; }
+  #stage { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  #stage.dragging { cursor: grabbing; }
+  .copy { position: absolute; left: 48px; top: 48px; right: 48px; z-index: 2; pointer-events: none; }
+  .copy h2 { margin-top: 12vh; font-size: 44px; line-height: 56px; font-weight: 700; letter-spacing: -0.02em; }
+  .copy p { margin-top: 16px; font-size: 17px; line-height: 26px; color: rgba(255,255,255,.82); }
+  .copy > * { opacity: 0; transform: translateY(8px); animation: rise var(--slow) var(--ease) forwards; }
+  .copy h2 { animation-delay: 120ms; } .copy p { animation-delay: 240ms; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+
+  .labels { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  .node-label {
+    position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px 4px 8px; border-radius: 9999px; white-space: nowrap;
+    background: rgba(8, 40, 80, .55); border: 1px solid rgba(255,255,255,.22);
+    color: #fff; font-size: 13px; line-height: 18px; font-weight: 600;
+    transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease);
+    will-change: transform, opacity;
+  }
+  .node-label svg { width: 16px; height: 16px; stroke-width: 1.5; }
+  .node-label.ai { background: rgba(255,255,255,.95); color: var(--primary-800); border-color: transparent; }
+  .node-label.ai small { font-weight: 500; color: var(--text-3); margin-left: 2px; }
+  .node-label.hot { background: var(--primary-600); border-color: var(--primary-300); }
+  .node-label.ai.hot { background: #fff; box-shadow: 0 0 0 3px rgba(147,197,253,.6); }
+
+  .hint-drag { position: absolute; left: 48px; bottom: 40px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,.6); pointer-events: none; transition: opacity var(--slow) var(--ease); }
+  .hint-drag svg { width: 16px; height: 16px; stroke-width: 1.5; }
+  .visual.quiet .hint-drag { opacity: 0; }
+</style>
+</head>
+<body>
+<div class="login">
+  <section class="visual" aria-label="ALL# 2.0 소개">
+    <canvas id="stage" aria-hidden="true"></canvas>
+    <div class="labels" id="labels" aria-hidden="true"></div>
+    <div class="copy">
+      <span class="v-chip"><i data-lucide="building-2"></i>ALL# 통합업무시스템 2.0</span>
+      <h2>오픈소스로 쉽고,<br>편리한 공공기관 ERP</h2>
+      <p>결재·인사·복무·재무를 하나의 계정으로 처리하세요.</p>
+    </div>
+    <p class="sr-only">업무 모듈: 인사, 급여, 복무, 교육, 평가, 예산, 회계, 계약, 자산, 전자결재, 시스템, ALL#_i AI 업무 도우미</p>
+    <div class="hint-drag"><i data-lucide="mouse-pointer-2"></i>끌어서 돌려 보기</div>
+  </section>
+  <main class="form-side"></main>
+</div>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="login-form.js"></script>
+<script>
+(function () {
+  const MODULES = [
+    ["인사", "users"], ["급여", "wallet"], ["복무", "clock"], ["교육", "graduation-cap"],
+    ["평가", "award"], ["예산", "chart-pie"], ["회계", "calculator"], ["계약", "file-text"],
+    ["자산", "box"], ["전자결재", "file-check"], ["시스템", "settings-2"], ["ALL#_i", "sparkles", true],
+  ];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const panel = document.querySelector(".visual");
+  const canvas = document.getElementById("stage");
+  const labelsEl = document.getElementById("labels");
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(40, 1, 1, 5000);
+  camera.position.z = 1000;
+
+  const world = new THREE.Group(); scene.add(world);   // 위치 오프셋
+  const orb = new THREE.Group(); world.add(orb);       // 회전
+
+  // 둥근 점 텍스처
+  function dotTex(inner, outer) {
+    const c = document.createElement("canvas"); c.width = c.height = 64;
+    const g = c.getContext("2d"), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, inner); gr.addColorStop(0.35, inner); gr.addColorStop(1, outer);
+    g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  }
+  const softTex = dotTex("rgba(255,255,255,1)", "rgba(255,255,255,0)");
+
+  // 중심: 하나의 계정 (점 구)
+  const R = 220, CORE = 52;
+  const coreGeo = new THREE.BufferGeometry(), coreN = 420, cp = new Float32Array(coreN * 3);
+  for (let i = 0; i < coreN; i++) {
+    const y = 1 - (i / (coreN - 1)) * 2, r = Math.sqrt(1 - y * y), t = i * 2.399963;
+    cp.set([Math.cos(t) * r * CORE, y * CORE, Math.sin(t) * r * CORE], i * 3);
+  }
+  coreGeo.setAttribute("position", new THREE.BufferAttribute(cp, 3));
+  const core = new THREE.Points(coreGeo, new THREE.PointsMaterial({ size: 5, map: softTex, transparent: true, depthWrite: false, color: 0x93C5FD, blending: THREE.AdditiveBlending }));
+  orb.add(core);
+  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex("rgba(96,165,250,.55)", "rgba(96,165,250,0)"), depthWrite: false, blending: THREE.AdditiveBlending }));
+  halo.scale.set(300, 300, 1); orb.add(halo);
+
+  // 모듈 노드 (피보나치 구)
+  const nodes = [];
+  MODULES.forEach(([name, icon, ai], i) => {
+    const n = MODULES.length, y = 1 - ((i + 0.5) / n) * 2, r = Math.sqrt(1 - y * y), t = i * 2.399963;
+    const p = new THREE.Vector3(Math.cos(t) * r * R, y * R * 0.8, Math.sin(t) * r * R);
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: softTex, color: ai ? 0xffffff : 0xBFDBFE, depthWrite: false, blending: THREE.AdditiveBlending }));
+    s.position.copy(p); s.scale.set(ai ? 30 : 20, ai ? 30 : 20, 1); orb.add(s);
+    const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), p]);
+    const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0x93C5FD, transparent: true, opacity: 0.22 }));
+    orb.add(line);
+    const el = document.createElement("div");
+    el.className = "node-label" + (ai ? " ai" : "");
+    el.innerHTML = `<i data-lucide="${icon}"></i>${name}${ai ? "<small>AI 업무 도우미</small>" : ""}`;
+    labelsEl.appendChild(el);
+    nodes.push({ name, p, s, line, el, ai: !!ai, base: ai ? 30 : 20 });
+  });
+  // 이웃 노드 연결
+  const linkPts = [];
+  nodes.forEach((a, i) => nodes.forEach((b, j) => { if (j > i && a.p.distanceTo(b.p) < R * 0.95) linkPts.push(a.p, b.p); }));
+  orb.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(linkPts), new THREE.LineBasicMaterial({ color: 0x60A5FA, transparent: true, opacity: 0.12 })));
+
+  // 궤도 링
+  const ringMat = new THREE.LineBasicMaterial({ color: 0x93C5FD, transparent: true, opacity: 0.18 });
+  [1.0, 1.18].forEach((k, i) => {
+    const pts = []; for (let a = 0; a <= 128; a++) { const t = a / 128 * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(t) * R * k, 0, Math.sin(t) * R * k)); }
+    const ring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), ringMat);
+    ring.rotation.x = i ? 0.35 : -0.2; ring.rotation.z = i ? -0.25 : 0.15; orb.add(ring);
+  });
+
+  // 배경 먼지
+  const dustN = 700, dp = new Float32Array(dustN * 3);
+  for (let i = 0; i < dustN; i++) dp.set([(Math.random() - .5) * 1800, (Math.random() - .5) * 1600, (Math.random() - .5) * 900 - 200], i * 3);
+  const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute("position", new THREE.BufferAttribute(dp, 3));
+  const dustMat = new THREE.PointsMaterial({ size: 3, map: softTex, transparent: true, opacity: 0.45, depthWrite: false, color: 0xBFDBFE });
+  const dust = new THREE.Points(dustGeo, dustMat); scene.add(dust);
+
+  // 크기
+  let W = 0, H = 0;
+  function resize() {
+    W = panel.clientWidth; H = panel.clientHeight;
+    renderer.setSize(W, H, false); camera.aspect = W / H; camera.updateProjectionMatrix();
+    const visH = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const px = visH / H;
+    world.position.set((W * 0.47 - W / 2) * px, -(H * 0.68 - H / 2) * px, 0); // 패널 오른쪽 아래
+    const sc = Math.min(1, W / 860); world.scale.setScalar(sc);
+  }
+  addEventListener("resize", resize); resize();
+
+  // 입력
+  let tx = 0, ty = 0, rotY = 0, rotX = 0.18, vel = reduce ? 0 : 0.0016, drag = null, quiet = false, hot = null;
+  const ray = new THREE.Vector3();
+  panel.addEventListener("pointermove", (e) => {
+    const b = panel.getBoundingClientRect(), mx = (e.clientX - b.left) / b.width - .5, my = (e.clientY - b.top) / b.height - .5;
+    if (drag) { rotY += (e.clientX - drag.x) * 0.006; rotX = Math.max(-0.6, Math.min(0.8, rotX + (e.clientY - drag.y) * 0.004)); drag = { x: e.clientX, y: e.clientY }; }
+    else { tx = mx * 0.25; ty = my * 0.15; }
+    // 가장 가까운 라벨 = hover
+    let best = null, bd = 44;
+    nodes.forEach((n) => { const d = Math.hypot(n.sx - (e.clientX - b.left), n.sy - (e.clientY - b.top)); if (d < bd && n.front) { bd = d; best = n; } });
+    hot = best;
+  });
+  panel.addEventListener("pointerleave", () => { tx = ty = 0; hot = null; });
+  canvas.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: e.clientY }; canvas.classList.add("dragging"); canvas.setPointerCapture(e.pointerId); });
+  addEventListener("pointerup", () => { drag = null; canvas.classList.remove("dragging"); });
+  addEventListener("formfocus", (e) => { quiet = e.detail; panel.classList.toggle("quiet", quiet); });
+
+  // 루프
+  const tmp = new THREE.Vector3();
+  let t0 = performance.now();
+  function frame(now) {
+    const dt = Math.min(50, now - t0); t0 = now;
+    const speed = quiet ? vel * 0.2 : vel;
+    if (!drag) rotY += speed * dt / 16;
+    orb.rotation.y = rotY; orb.rotation.x += (rotX + ty - orb.rotation.x) * 0.06;
+    world.rotation.y += (tx - world.rotation.y) * 0.05;
+    if (!reduce) {
+      dust.rotation.y += 0.00008 * dt; core.rotation.y -= 0.0004 * dt;
+      const pulse = 1 + Math.sin(now / 900) * 0.06; halo.scale.set(300 * pulse, 300 * pulse, 1);
+    }
+    dustMat.opacity += ((quiet ? 0.2 : 0.45) - dustMat.opacity) * 0.05;
+
+    scene.updateMatrixWorld();
+    nodes.forEach((n) => {
+      n.s.getWorldPosition(tmp);
+      const depth = tmp.z / world.scale.x;                 // -R..R
+      const f = (depth + R) / (2 * R);                     // 0 뒤 · 1 앞
+      tmp.project(camera);
+      n.sx = (tmp.x * .5 + .5) * W; n.sy = (-tmp.y * .5 + .5) * H; n.front = f > 0.35;
+      const isHot = hot === n;
+      const op = isHot ? 1 : quiet ? 0.25 + f * 0.35 : 0.18 + f * 0.82;
+      const sc = 0.82 + f * 0.22 + (isHot ? 0.08 : 0);
+      n.el.style.opacity = op.toFixed(3);
+      n.el.style.transform = `translate(${n.sx + 14}px, ${n.sy - 14}px) scale(${sc.toFixed(3)})`;
+      n.el.style.zIndex = Math.round(f * 100);
+      n.el.classList.toggle("hot", isHot);
+      n.line.material.opacity = isHot ? 0.7 : 0.22 * (0.4 + f);
+      const k = n.base * (isHot ? 1.6 : 1); n.s.scale.set(k, k, 1);
+    });
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  lucide.createIcons();
+})();
+</script>
+</body>
+</html>

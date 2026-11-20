@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그인 · 2안 슬라이드형 · 다크</title>
+<link rel="stylesheet" href="login-common.css">
+<style>
+  .visual { background: linear-gradient(160deg, #0E5AA6 0%, var(--navy) 50%, var(--navy-deep) 100%); color: #fff; display: flex; flex-direction: column; }
+  .v-head { position: relative; z-index: 2; padding: 48px 48px 0; }
+  .slides { position: relative; flex: 1; }
+  .slide { position: absolute; inset: 0; display: grid; grid-template-rows: 1fr auto; padding: 0 48px 32px; visibility: hidden; }
+  .slide.on { visibility: visible; }
+  .art { position: relative; display: grid; place-items: center; }
+  .txt { min-height: 168px; }
+  .txt h2 { font-size: 40px; line-height: 52px; font-weight: 700; letter-spacing: -0.02em; }
+  .txt p { margin-top: 12px; font-size: 17px; line-height: 26px; color: rgba(255,255,255,.82); }
+  kbd { font-family: inherit; display: inline-flex; align-items: center; height: 26px; padding: 0 8px; margin-left: 10px; vertical-align: middle; border: 1px solid rgba(255,255,255,.4); border-bottom-width: 2px; border-radius: var(--r4); font: 600 13px/1 "Pretendard GOV Variable", sans-serif; color: #fff; }
+
+  /* 전환: 텍스트·그림 순차 등장 */
+  .slide .art > *, .slide .txt > * { opacity: 0; transform: translateY(16px); transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease); }
+  .slide.on .art > * { opacity: 1; transform: none; transition-delay: 60ms; }
+  .slide.on .txt > * { opacity: 1; transform: none; }
+  .slide.on .txt > :nth-child(1) { transition-delay: 140ms; }
+  .slide.on .txt > :nth-child(2) { transition-delay: 220ms; }
+
+  /* 1 · BI 히어로 — 공식 BI 경로 + 스우시에서 이어지는 물결 + 부제 키워드 칩 */
+  .hero { align-self: stretch; justify-self: stretch; position: relative; width: 100%; height: 100%; min-height: 420px; }
+  .hero > * { position: absolute; transition: transform 600ms var(--ease); will-change: transform; }
+  .glow { left: 50%; top: 42%; width: 620px; height: 620px; margin: -310px 0 0 -310px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(40,170,225,.32), rgba(40,170,225,.08) 55%, transparent);
+    transform: translate(calc(var(--mx,0) * -10px), calc(var(--my,0) * -10px)); }
+  .on .glow { animation: breathe 6s ease-in-out infinite; }
+  @keyframes breathe { 50% { opacity: .6; } }
+  .dots-field { inset: -40px -48px; opacity: .35;
+    background-image: radial-gradient(rgba(255,255,255,.55) 1px, transparent 1.5px); background-size: 28px 28px;
+    -webkit-mask-image: radial-gradient(60% 55% at 50% 45%, #000 20%, transparent 75%); mask-image: radial-gradient(60% 55% at 50% 45%, #000 20%, transparent 75%);
+    transform: translate(calc(var(--mx,0) * 6px), calc(var(--my,0) * 6px)); }
+
+  .bi-mark { left: 50%; top: 6%; width: 560px; margin-left: -280px; overflow: visible;
+    transform: translate(calc(var(--mx,0) * -18px), calc(var(--my,0) * -12px)); }
+  .bi-mark .ink { fill: rgba(255,255,255,0); stroke: rgba(255,255,255,.9); stroke-width: 1.5; stroke-linejoin: round;
+    stroke-dasharray: var(--len); stroke-dashoffset: var(--len); }
+  .on .bi-mark .ink { animation: draw 1400ms var(--ease) forwards, inkfill 600ms var(--ease) forwards; animation-delay: var(--d), calc(var(--d) + 1100ms); }
+  .bi-mark .sw { fill: #28AAE1; opacity: 0; filter: drop-shadow(0 0 18px rgba(40,170,225,.8)); transform-origin: 0 270px; transform: scaleX(.2); }
+  .on .bi-mark .sw { animation: sweep 900ms var(--ease) 900ms forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes inkfill { to { fill: rgba(255,255,255,.14); stroke: rgba(255,255,255,.55); } }
+  @keyframes sweep { to { opacity: 1; transform: none; } }
+
+  .wave { left: -48px; right: -48px; bottom: 0; width: calc(100% + 96px); height: 62%; overflow: visible;
+    transform: translate(calc(var(--mx,0) * 10px), calc(var(--my,0) * 8px)); }
+  .wave path { fill: none; stroke: #93C5FD; stroke-linecap: round; }
+  .on .wave path.l { animation: drift 9s ease-in-out infinite alternate; }
+  .wave path.l:nth-of-type(2) { animation-delay: -2s !important; } .wave path.l:nth-of-type(3) { animation-delay: -4s !important; }
+  .wave path.l:nth-of-type(4) { animation-delay: -6s !important; } .wave path.l:nth-of-type(5) { animation-delay: -7s !important; }
+  @keyframes drift { from { transform: translateX(-20px); } to { transform: translateX(20px); } }
+  .wave .comet { fill: #fff; filter: drop-shadow(0 0 6px #93C5FD) drop-shadow(0 0 14px #28AAE1); }
+
+  .kw { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px 0 10px; border-radius: 9999px;
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.28); backdrop-filter: blur(6px);
+    color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; opacity: 0;
+    transform: translate(calc(-50% + var(--mx,0) * 14px), calc(-50% + var(--my,0) * 10px)) translateY(8px); }
+  .kw svg { width: 16px; height: 16px; stroke-width: 1.5; color: #93C5FD; }
+  .kw::before { content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: 18px; background: linear-gradient(rgba(255,255,255,.5), transparent); }
+  .on .kw { animation: kwin 400ms var(--ease) forwards, bob 4s ease-in-out infinite; animation-delay: var(--d), calc(var(--d) + 400ms); }
+  @keyframes kwin { to { opacity: 1; transform: translate(calc(-50% + var(--mx,0) * 14px), calc(-50% + var(--my,0) * 10px)); } }
+  @keyframes bob { 0%,100% { opacity: 1; transform: translate(calc(-50% + var(--mx,0) * 14px), calc(-50% + var(--my,0) * 10px)); } 50% { opacity: 1; transform: translate(calc(-50% + var(--mx,0) * 14px), calc(-50% - 6px + var(--my,0) * 10px)); } }
+
+  /* 2 · 모듈 */
+  .mods { display: grid; grid-template-columns: repeat(4, 112px); gap: 28px 32px; }
+  .mod { display: grid; justify-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+  .mod span.ic { display: grid; place-items: center; width: 64px; height: 64px; border-radius: var(--r8); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); }
+  .mod svg { width: 28px; height: 28px; stroke-width: 1.5; }
+  .mod.ai span.ic { background: #fff; color: var(--primary-700); }
+  .mods .mod { opacity: 0; transform: scale(.85); transition: opacity var(--moderate) var(--ease), transform var(--moderate) var(--ease); }
+  .on .mods .mod { opacity: 1; transform: none; }
+
+  /* 3 · 통합 검색 */
+  .search { width: 440px; border-radius: var(--r8); background: #fff; color: var(--text); box-shadow: 0 24px 48px rgba(0,0,0,.25); overflow: hidden; }
+  .search .bar { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 16px; border-bottom: 1px solid #E5E7EB; font-size: 16px; }
+  .search .bar svg { width: 20px; height: 20px; stroke-width: 1.5; color: #616B79; }
+  .search .q { min-width: 2px; } .search .caret { width: 2px; height: 22px; background: var(--primary-700); animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .search .bar kbd { margin-left: auto; color: #616B79; border-color: #D5DAE1; }
+  .search ul { list-style: none; padding: 8px; min-height: 104px; }
+  .search li { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px; border-radius: var(--r4); font-size: 15px; opacity: 0; transform: translateY(4px); transition: all var(--base) var(--ease); }
+  .search li.show { opacity: 1; transform: none; }
+  .search li:first-child.show { background: var(--primary-50); }
+  .search li svg { width: 20px; height: 20px; stroke-width: 1.5; color: var(--primary-700); }
+  .search li b { color: var(--primary-700); }
+
+  /* 4 · ALL#_i */
+  .ai-orb { position: relative; width: 300px; height: 300px; display: grid; place-items: center; }
+  .ai-orb .core { position: relative; z-index: 1; display: grid; place-items: center; width: 112px; height: 112px; border-radius: 50%; background: #fff; color: var(--primary-700); box-shadow: 0 0 60px rgba(147,197,253,.6); }
+  .ai-orb .core svg { width: 48px; height: 48px; stroke-width: 1.5; }
+  .ai-orb i.ring { position: absolute; inset: 94px; border: 1.5px solid rgba(147,197,253,.7); border-radius: 50%; }
+  .on .ai-orb i.ring { animation: ripple 3s var(--ease) infinite; }
+  .ai-orb i.ring:nth-of-type(2) { animation-delay: 1s !important; } .ai-orb i.ring:nth-of-type(3) { animation-delay: 2s !important; }
+  @keyframes ripple { from { transform: scale(1); opacity: .9; } to { transform: scale(2.6); opacity: 0; } }
+
+  /* 5 · 테마 */
+  .theme-demo { position: relative; width: 480px; height: 290px; border-radius: var(--r8); overflow: hidden; box-shadow: 0 24px 48px rgba(0,0,0,.25); }
+  .theme-demo .scr { position: absolute; inset: 0; display: grid; grid-template-columns: 96px 1fr; grid-template-rows: 32px 1fr; }
+  .scr .g { grid-column: 1 / -1; } .scr .c { padding: 16px; display: grid; gap: 10px; align-content: start; }
+  .scr .c i { display: block; height: 14px; border-radius: 2px; }
+  .scr.light { background: #fff; } .scr.light .g { background: #F5F7FA; border-bottom: 1px solid #E5E7EB; } .scr.light .l { background: #F5F7FA; border-right: 1px solid #E5E7EB; } .scr.light .c i { background: #E5E7EB; } .scr.light .c i:first-child { background: var(--primary-700); width: 40%; }
+  .scr.dark { background: #111418; clip-path: inset(0 0 0 var(--split, 50%)); } .scr.dark .g { background: #191D23; border-bottom: 1px solid #39404A; } .scr.dark .l { background: #191D23; border-right: 1px solid #39404A; } .scr.dark .c i { background: #39404A; } .scr.dark .c i:first-child { background: var(--primary-600); width: 40%; }
+  .theme-demo .knob { position: absolute; top: 0; bottom: 0; left: var(--split, 50%); width: 2px; background: #fff; }
+  .theme-demo .knob::after { content: ""; position: absolute; top: 50%; left: 50%; width: 28px; height: 28px; margin: -14px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+
+  /* 컨트롤 */
+  .ctrl { position: relative; z-index: 2; display: flex; align-items: center; gap: 16px; padding: 0 48px 40px; }
+  .dots { display: flex; gap: 6px; }
+  .dots button { position: relative; width: 40px; height: 24px; border: 0; background: none; cursor: pointer; }
+  .dots button::before, .dots button::after { content: ""; position: absolute; left: 0; right: 0; top: 11px; height: 2px; border-radius: 2px; background: rgba(255,255,255,.3); }
+  .dots button::after { background: #fff; transform-origin: left; transform: scaleX(0); }
+  .dots button.done::after { transform: scaleX(1); }
+  .dots button.on::after { animation: fill var(--dur, 6s) linear forwards; }
+  .dots button.on.paused::after { animation-play-state: paused; }
+  @keyframes fill { to { transform: scaleX(1); } }
+  .count { font-size: 13px; color: rgba(255,255,255,.7); min-width: 44px; }
+  .count b { color: #fff; font-weight: 600; }
+  .ctrl .btns { margin-left: auto; display: flex; gap: 4px; }
+  .ctrl .btns button { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid rgba(255,255,255,.3); border-radius: var(--r4); background: none; color: #fff; cursor: pointer; transition: background var(--fast) var(--ease); }
+  .ctrl .btns button:hover { background: rgba(255,255,255,.1); }
+  .ctrl svg { width: 16px; height: 16px; stroke-width: 1.5; }
+</style>
+</head>
+<body>
+<div class="login">
+  <section class="visual" aria-roledescription="carousel" aria-label="ALL# 2.0 소개">
+    <div class="v-head"><span class="v-chip"><i data-lucide="building-2"></i>ALL# 통합업무시스템 2.0</span></div>
+
+    <div class="slides" id="slides" aria-live="off">
+      <article class="slide on" aria-roledescription="slide" aria-label="1 / 5">
+        <div class="art">
+          <div class="hero" id="hero" aria-hidden="true">
+            <span class="glow"></span>
+            <span class="dots-field"></span>
+            <svg class="bi-mark" viewBox="0 60 760 300"><!-- 공식 BI 경로 (assets/characters/allsharp-bi.svg · 올샵 글자 제외) --><path class="ink" style="--d:0ms" d="M179.664 97.8572H140.788L94.004 350.415H152.164L155.039 328.925L166.204 243.759L179.035 137.055H179.664V97.8572Z"/><path class="ink" style="--d:120ms" d="M179.664 97.8572H218.54L265.324 350.415H207.165L204.289 328.925L193.124 243.759L180.293 137.055H179.664V97.8572Z"/><path class="ink" style="--d:240ms" d="M282.193 97.8572H340.349V301.737H403.569V350.415H282.193V97.8572Z"/><path class="ink" style="--d:360ms" d="M422.531 97.8572H480.691V301.737H543.915V350.415H422.531V97.8572Z"/><path class="ink" style="--d:480ms" d="M610.652 70.7758H587.105L581.217 102.787H604.758L610.652 70.7758ZM540.013 130.799H516.142V102.787H545.25L551.13 70.7758H527.264V42.7692H556.364L563.886 -0.000152588H600.185L592.334 42.7692H615.88L623.724 -0.000152588H659.697L651.854 42.7692H675.722V70.7758H646.618L640.733 102.787H664.605V130.799H635.501L627.978 173.562H592.013L599.525 130.799H575.988L568.458 173.562H532.493L540.013 130.799Z"/><path class="sw" fill-rule="evenodd" d="M0 265.857C0 265.857 193.237 305.032 340.349 265.857C487.464 226.68 568.072 167.964 749.745 159.161C749.745 159.161 568.636 146.525 371.28 212.37C197.553 270.333 69.5067 271.286 0 265.857Z"/></svg>
+            <svg class="wave" id="heroWave" viewBox="0 0 860 400" preserveAspectRatio="none">
+              <path class="l" id="mainWave" d="M-40 300 C 180 350, 360 330, 520 240 S 780 120, 900 140" stroke-width="2.5" opacity=".95"/>
+              <path class="l" d="M-40 322 C 190 362, 370 350, 530 270 S 780 160, 900 176" stroke-width="1.5" opacity=".55"/>
+              <path class="l" d="M-40 276 C 170 330, 350 300, 510 210 S 770 84, 900 102" stroke-width="1.5" opacity=".4"/>
+              <path class="l" d="M-40 350 C 200 380, 390 372, 550 305 S 790 210, 900 222" stroke-width="1" opacity=".3"/>
+              <path class="l" d="M-40 252 C 160 312, 340 274, 500 182 S 760 52, 900 66" stroke-width="1" opacity=".22"/>
+              <circle class="comet" r="3.5"><animateMotion dur="5s" repeatCount="indefinite" calcMode="spline" keyTimes="0;1" keySplines=".4 0 .2 1"><mpath href="#mainWave"/></animateMotion></circle>
+            </svg>
+            <span class="kw" style="--d:1400ms" data-at=".2"><i data-lucide="file-check"></i>결재</span>
+            <span class="kw" style="--d:1520ms" data-at=".4"><i data-lucide="users"></i>인사</span>
+            <span class="kw" style="--d:1640ms" data-at=".6"><i data-lucide="clock"></i>복무</span>
+            <span class="kw" style="--d:1760ms" data-at=".8"><i data-lucide="calculator"></i>재무</span>
+          </div>
+        </div>
+        <div class="txt"><h2>오픈소스로 쉽고,<br>편리한 공공기관 ERP</h2><p>결재·인사·복무·재무를 하나의 계정으로 처리하세요.</p></div>
+      </article>
+
+      <article class="slide" aria-roledescription="slide" aria-label="2 / 5">
+        <div class="art"><div class="mods" id="mods"></div></div>
+        <div class="txt"><h2>하나의 계정으로 모든 업무를</h2></div>
+      </article>
+
+      <article class="slide" aria-roledescription="slide" aria-label="3 / 5">
+        <div class="art">
+          <div class="search" aria-hidden="true">
+            <div class="bar"><i data-lucide="search"></i><span class="q" id="q"></span><span class="caret"></span><kbd>Ctrl+K</kbd></div>
+            <ul id="results">
+              <li><i data-lucide="users"></i><span><b>인</b><b>사</b></span></li>
+              <li><i data-lucide="chart-pie"></i><span><b>예</b><b>산</b></span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="txt"><h2>통합 검색<kbd>Ctrl+K</kbd></h2><p>메뉴·기능·사원을 한 입력창에서 찾고, 초성으로도 검색합니다</p></div>
+      </article>
+
+      <article class="slide" aria-roledescription="slide" aria-label="4 / 5">
+        <div class="art"><div class="ai-orb" aria-hidden="true"><i class="ring"></i><i class="ring"></i><i class="ring"></i><span class="core"><i data-lucide="sparkles"></i></span></div></div>
+        <div class="txt"><h2>ALL#_i<kbd>Alt+I</kbd></h2><p>현재 화면의 데이터를 참고해 업무를 돕는 AI 도우미입니다</p></div>
+      </article>
+
+      <article class="slide" aria-roledescription="slide" aria-label="5 / 5">
+        <div class="art">
+          <div class="theme-demo" id="themeDemo" aria-hidden="true">
+            <div class="scr light"><span class="g"></span><span class="l"></span><span class="c"><i></i><i></i><i></i><i style="width:70%"></i></span></div>
+            <div class="scr dark"><span class="g"></span><span class="l"></span><span class="c"><i></i><i></i><i></i><i style="width:70%"></i></span></div>
+            <span class="knob"></span>
+          </div>
+        </div>
+        <div class="txt"><h2>테마</h2><p>다크·화이트 모드를 골라 눈의 피로를 줄입니다</p></div>
+      </article>
+    </div>
+
+    <div class="ctrl">
+      <div class="dots" id="dots" role="tablist" aria-label="슬라이드 선택"></div>
+      <span class="count" id="count"><b>01</b> / 05</span>
+      <div class="btns">
+        <button type="button" id="prev" aria-label="이전 슬라이드"><i data-lucide="chevron-left"></i></button>
+        <button type="button" id="play" aria-label="자동 넘김 멈춤"><i data-lucide="pause"></i></button>
+        <button type="button" id="next" aria-label="다음 슬라이드"><i data-lucide="chevron-right"></i></button>
+      </div>
+    </div>
+  </section>
+  <main class="form-side"></main>
+</div>
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="login-form.js"></script>
+<script>
+(function () {
+  const MODULES = [["인사","users"],["급여","wallet"],["복무","clock"],["교육","graduation-cap"],["평가","award"],["예산","chart-pie"],["회계","calculator"],["계약","file-text"],["자산","box"],["전자결재","file-check"],["시스템","settings-2"],["ALL#_i","sparkles",1]];
+  document.getElementById("mods").innerHTML = MODULES.map(([n, ic, ai], i) =>
+    `<div class="mod${ai ? " ai" : ""}" style="transition-delay:${120 + i * 40}ms"><span class="ic"><i data-lucide="${ic}"></i></span>${n}</div>`).join("");
+  lucide.createIcons();
+
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const DUR = 6000;
+  const panel = document.querySelector(".visual");
+  const slides = [...document.querySelectorAll(".slide")];
+  const dotsEl = document.getElementById("dots"), count = document.getElementById("count"), playBtn = document.getElementById("play");
+  dotsEl.style.setProperty("--dur", DUR + "ms");
+  slides.forEach((_, i) => { const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-label", `${i + 1}번 슬라이드`); b.onclick = () => go(i, true); dotsEl.appendChild(b); });
+  const dots = [...dotsEl.children];
+
+  let cur = 0, timer = null, userPaused = reduce, hover = false, typing = false, startAt = 0, left = DUR;
+  const paused = () => userPaused || hover || typing;
+
+  function go(i, manual) {
+    cur = (i + slides.length) % slides.length;
+    slides.forEach((s, k) => s.classList.toggle("on", k === cur));
+    dots.forEach((d, k) => { d.classList.remove("on", "done"); void d.offsetWidth; if (k < cur) d.classList.add("done"); if (k === cur) d.classList.add("on"); d.setAttribute("aria-selected", k === cur); });
+    count.innerHTML = `<b>${String(cur + 1).padStart(2, "0")}</b> / ${String(slides.length).padStart(2, "0")}`;
+    left = DUR; schedule(); enter(cur);
+  }
+  function schedule() {
+    clearTimeout(timer);
+    dots[cur].classList.toggle("paused", paused());
+    if (paused()) return;
+    startAt = performance.now();
+    timer = setTimeout(() => go(cur + 1), left);
+  }
+  function hold() { if (!paused()) return; clearTimeout(timer); left = Math.max(0, left - (performance.now() - startAt)); dots[cur].classList.add("paused"); }
+  function setPlay() { playBtn.setAttribute("aria-label", userPaused ? "자동 넘김 시작" : "자동 넘김 멈춤"); playBtn.innerHTML = `<i data-lucide="${userPaused ? "play" : "pause"}"></i>`; lucide.createIcons(); }
+
+  document.getElementById("prev").onclick = () => go(cur - 1, true);
+  document.getElementById("next").onclick = () => go(cur + 1, true);
+  playBtn.onclick = () => { userPaused = !userPaused; setPlay(); userPaused ? hold() : schedule(); };
+  panel.addEventListener("mouseenter", () => { hover = true; hold(); });
+  panel.addEventListener("mouseleave", () => { hover = false; schedule(); });
+  panel.addEventListener("keydown", (e) => { if (e.key === "ArrowRight") go(cur + 1, true); if (e.key === "ArrowLeft") go(cur - 1, true); });
+  addEventListener("formfocus", (e) => { typing = e.detail; typing ? hold() : schedule(); });  // 입력 중에는 넘기지 않는다
+
+  // 1번 히어로: BI 선 길이 · 키워드 칩을 물결 위에 배치 · 마우스 시차
+  const hero = document.getElementById("hero"), mainWave = document.getElementById("mainWave");
+  hero.querySelectorAll(".ink").forEach((p) => p.style.setProperty("--len", Math.ceil(p.getTotalLength())));
+  function placeKw() {
+    const hb = hero.getBoundingClientRect(), m = mainWave.getScreenCTM(), L = mainWave.getTotalLength();
+    hero.querySelectorAll(".kw").forEach((k) => {
+      const pt = mainWave.getPointAtLength(L * +k.dataset.at), x = m.a * pt.x + m.c * pt.y + m.e, y = m.b * pt.x + m.d * pt.y + m.f;
+      k.style.left = (x - hb.left) + "px"; k.style.top = (y - hb.top - 34) + "px";
+    });
+  }
+  addEventListener("resize", placeKw); placeKw();
+  if (!reduce) {
+    panel.addEventListener("pointermove", (e) => { const b = panel.getBoundingClientRect(); hero.style.setProperty("--mx", ((e.clientX - b.left) / b.width - .5) * 2); hero.style.setProperty("--my", ((e.clientY - b.top) / b.height - .5) * 2); });
+    panel.addEventListener("pointerleave", () => { hero.style.setProperty("--mx", 0); hero.style.setProperty("--my", 0); });
+  }
+
+  // 슬라이드별 진입 연출
+  let typeTimer, raf;
+  function enter(i) {
+    clearInterval(typeTimer); cancelAnimationFrame(raf);
+    if (i === 2) {                                   // 초성 타이핑 → 결과
+      const q = document.getElementById("q"), li = [...document.querySelectorAll("#results li")];
+      q.textContent = ""; li.forEach((l) => l.classList.remove("show"));
+      const s = ["ㅇ", "ㅅ"]; let k = 0;
+      typeTimer = setInterval(() => { if (k < s.length) { q.textContent += s[k++]; } else { clearInterval(typeTimer); li.forEach((l, n) => setTimeout(() => l.classList.add("show"), n * 120)); } }, reduce ? 1 : 450);
+    }
+    if (i === 4 && !reduce) {                       // 라이트 ↔ 다크 분할선 왕복
+      const el = document.getElementById("themeDemo"), t0 = performance.now();
+      const loop = (t) => { const p = 50 + Math.sin((t - t0) / 1100) * 30; el.style.setProperty("--split", p + "%"); raf = requestAnimationFrame(loop); };
+      raf = requestAnimationFrame(loop);
+    }
+  }
+  setPlay(); go(0);
+})();
+</script>
+</body>
+</html>

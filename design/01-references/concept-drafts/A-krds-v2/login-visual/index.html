@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그인 비주얼 3안</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov-dynamic-subset.min.css">
+<style>
+  :root { --bg: #F5F7FA; --text: #111827; --text-3: #616B79; --border: #D5DAE1; --primary: #1D4ED8; }
+  * { box-sizing: border-box; margin: 0; }
+  body { font-family: "Pretendard GOV Variable", "Malgun Gothic", sans-serif; background: var(--bg); color: var(--text); padding: 40px 24px 64px; }
+  h1 { font-size: 24px; line-height: 32px; } .lead { margin-top: 8px; color: var(--text-3); font-size: 14px; }
+  .grid { margin-top: 32px; display: grid; gap: 32px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .card header { display: flex; align-items: baseline; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .card h2 { font-size: 16px; line-height: 24px; } .card header span { color: var(--text-3); font-size: 13px; }
+  .card header a { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--primary); text-decoration: none; }
+  .badge { display: inline-block; padding: 0 6px; margin-left: 6px; border-radius: 2px; background: #EFF6FF; color: var(--primary); font-size: 12px; line-height: 20px; font-weight: 600; vertical-align: 2px; }
+  .frame { position: relative; aspect-ratio: 16 / 9; overflow: hidden; }
+  .frame iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; transform-origin: 0 0; }
+</style>
+</head>
+<body>
+  <h1>00 로그인 · 비주얼 영역 3안</h1>
+  <p class="lead">폼은 A안(Figma 7:2) 그대로. 왼쪽 비주얼 영역만 다시 설계 · 1920×1080 축소 미리보기 · 각 안은 새 탭에서 실제 크기로 열어 조작해 보세요.</p>
+  <div class="grid">
+    <section class="card"><header><h2>1안 · 인터랙션형</h2><span>Three.js · 12개 모듈을 하나의 계정 주위 3D 성운으로</span><a href="v1-interactive.html" target="_blank">라이트 ↗</a><a href="v1-interactive-dark.html" target="_blank" style="margin-left:12px">다크 ↗</a></header><div class="frame"><iframe src="v1-interactive.html" title="1안"></iframe></div></section>
+    <section class="card"><header><h2>2안 · 슬라이드형</h2><span>장면당 메시지 1개 · 5장 자동 넘김</span><a href="v2-slides.html" target="_blank">라이트 ↗</a><a href="v2-slides-dark.html" target="_blank" style="margin-left:12px">다크 ↗</a></header><div class="frame"><iframe src="v2-slides.html" title="2안"></iframe></div></section>
+    <section class="card"><header><h2>3안 · 차분한 물결<span class="badge">추천</span></h2><span>Canvas 2D BI 물결 + 달라진 점 1건씩</span><a href="v3-recommended.html" target="_blank">라이트 ↗</a><a href="v3-recommended-dark.html" target="_blank" style="margin-left:12px">다크 ↗</a></header><div class="frame"><iframe src="v3-recommended.html" title="3안"></iframe></div></section>
+  </div>
+<script>
+  const fit = () => document.querySelectorAll(".frame").forEach((f) => f.querySelector("iframe").style.transform = `scale(${f.clientWidth / 1920})`);
+  addEventListener("resize", fit); fit();
+</script>
+</body>
+</html>

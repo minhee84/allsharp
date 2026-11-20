@@ -36,6 +36,10 @@ STAGE=screens/fix 시작 시 `docs/ui-quality.md`와 `docs/capture-protocol.md`�
   이미지를 생성하지 않는다. 폴더에 없는 파일이 필요하면 만들지 말고 사용자에게 요청한다.
 - **아이콘은 손으로 그리지 않는다.** design-rules.md 의 lucide 이름을 CDN 에서 받아 만든다.
   CDN 에 없는 이름이면 비슷하게 그리지 말고 build-log 에 질문으로 남기고 멈춘다.
+- **레이아웃 틀어짐 방지 규칙 `docs/figma-layout-safety.md` 를 STAGE 시작 시 읽고 지킨다.**
+  인스턴스 rescale 금지(Size 변형 사용) · strokesIncludedInLayout=false · 레이아웃 래퍼 clipsContent=false ·
+  반투명은 alpha 변수 · STAGE 끝에 구조 검사 4종 0건 확인 (서버 스크린샷이 앱 렌더와 다를 수 있다) ·
+  화면 재설계 시 기존 노드를 옮기거나 복제하지 말고 컴포넌트에서 새로 생성 · 앱에서만 깨지면 패치 반복 대신 재생성
 - **Figma 파일을 직접 만들지 않는다.** 사용자가 만든 파일의 키에만 작업한다.
   (`create_new_file` 도구는 이 에이전트에 주어지지 않는다)
 
@@ -354,6 +358,10 @@ design/03-design-rules/design-rules.md §I 표 ↔ design/assets/characters/ (ch
 - ❌ design-rules.md status가 confirmed 아닌데 실행
 - ❌ **STAGE 문서(`docs/figma-builder/stage-*.md`)를 Read 하지 않고 절차를 진행** (build-log 에 `stage-doc:` 줄 필수)
 - ❌ design-rules.md에 없는 값 임의 생성
+- ❌ 기획 원본 문서(`3300.UI,UX 프로젝트` 폴더의 착수보고·UI템플릿 제안 pptx 등)나 사용자가 준 참고 자료에 근거가 없는 기능·영역·버튼·탭·문구 추가
+  - `design/00-spec/`·screen-contract 는 요약이라 출처가 아니다. 문서로 근거를 확인한 항목만 쓴다
+  - `assumptions`는 사용자 확인 전에는 그리지 않는다
+  - 필요해 보이면 build-log 에 '제안'으로만 남긴다
 - ❌ Figma 화면에 번호 라벨 (①②③) 추가 (Figma는 최종 확정물)
 - ❌ 자리표시에 "버튼", "텍스트" 같은 더미 사용
 - ❌ 한 번에 큰 프레임 생성 (컴포넌트/화면 하나씩)

@@ -1,0 +1,110 @@
+/* 로그인 비주얼 3안 공통 — 폼 영역은 Figma 7:2(A안) 그대로. 토큰은 fixed-conditions.md 기준 */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-gov-dynamic-subset.min.css");
+
+:root {
+  --primary-50: #EFF6FF; --primary-100: #DBEAFE; --primary-200: #BFDBFE; --primary-300: #93C5FD;
+  --primary-400: #60A5FA; --primary-500: #3B82F6; --primary-600: #2563EB; --primary-700: #1D4ED8;
+  --primary-800: #1E40AF; --primary-900: #1E3A8A; --primary-950: #172554;
+  --navy: #0B4A89;          /* A안 브랜드 패널 */
+  --navy-deep: #08386B;
+
+  --bg: #FFFFFF; --bg-subtle: #F5F7FA; --surface: #FFFFFF;
+  --text: #111827; --text-2: #374151; --text-3: #616B79;
+  --border: #D5DAE1; --border-strong: #616B79;
+  --action: var(--primary-700); --action-hover: var(--primary-800);
+  --link: var(--primary-700); --focus: var(--primary-700);
+  --warn: #92400E; --info: #0369A1;
+
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --fast: 150ms; --base: 200ms; --moderate: 250ms; --slow: 300ms;
+  --r4: 4px; --r8: 8px;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --bg: #111418; --bg-subtle: #191D23; --surface: #191D23;
+  --text: #E7EAEE; --text-2: #C4CAD2; --text-3: #8B95A2;
+  --border: #39404A; --border-strong: #6A7480;
+  --action: var(--primary-600); --action-hover: var(--primary-800);
+  --link: var(--primary-400); --focus: var(--primary-400);
+  --warn: #FBBF24; --info: #38BDF8;
+  --navy: #0A2647; --navy-deep: #061A33;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: "Pretendard GOV Variable", "Pretendard GOV", "Malgun Gothic", sans-serif;
+  font-size: 14px; line-height: 20px; color: var(--text); background: var(--bg);
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums;
+  overflow: hidden;
+}
+button, input, select { font: inherit; color: inherit; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- 레이아웃 ---------- */
+.login { display: grid; grid-template-columns: minmax(520px, 860fr) 1060fr; height: 100vh; min-height: 720px; }
+.visual { position: relative; overflow: hidden; isolation: isolate; }
+.form-side { position: relative; display: flex; flex-direction: column; background: var(--bg); overflow: auto; }
+@media (max-width: 1100px) { .login { grid-template-columns: 1fr; } .visual { display: none; } }
+
+/* ---------- 폼 영역 (A안 동일) ---------- */
+.topbar { display: flex; justify-content: flex-end; align-items: center; gap: 16px; padding: 16px 44px; }
+.seg { display: inline-flex; padding: 2px; border-radius: 9999px; background: var(--bg-subtle); border: 1px solid var(--border); }
+.seg button { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 12px; border: 0; border-radius: 9999px; background: transparent; color: var(--text-3); font-size: 12px; cursor: pointer; transition: background var(--fast) var(--ease), color var(--fast) var(--ease); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.seg svg, .ghost svg { width: 16px; height: 16px; stroke-width: 1.5; }
+.ghost { display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: var(--text-2); font-size: 13px; cursor: pointer; }
+
+.center { flex: 1; display: grid; place-items: center; padding: 24px 44px; }
+.form { width: 400px; max-width: 100%; }
+.form .bi { height: 48px; display: block; margin-bottom: 24px; }
+.form .bi-dark, :root[data-theme="dark"] .form .bi-light { display: none; }
+:root[data-theme="dark"] .form .bi-dark { display: block; } /* 다크: 흰색 BI (allsharp-bi-white.svg) */
+.form h1 { font-size: 20px; line-height: 28px; font-weight: 700; }
+.form .desc { margin-top: 4px; color: var(--text-3); font-size: 13px; line-height: 18px; }
+.field { margin-top: 16px; }
+.field:first-of-type { margin-top: 24px; }
+.field label { display: block; margin-bottom: 6px; font-size: 13px; color: var(--text-2); }
+.control { position: relative; }
+.control input, .control select {
+  width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: var(--r4);
+  background: var(--surface); font-size: 14px; appearance: none; transition: border-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+.control input:focus, .control select:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 1px var(--focus); }
+.control .suffix { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 28px; height: 28px; border: 0; background: none; color: var(--text-3); cursor: pointer; pointer-events: auto; border-radius: var(--r4); }
+.control .suffix.deco { pointer-events: none; }
+.control svg { width: 16px; height: 16px; stroke-width: 1.5; }
+.hint { display: none; align-items: center; gap: 6px; margin-top: 6px; color: var(--warn); font-size: 12px; line-height: 16px; font-weight: 600; }
+.hint.on { display: flex; }
+.hint svg { width: 16px; height: 16px; stroke-width: 1.5; }
+.row { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 13px; }
+.check { display: inline-flex; align-items: center; gap: 8px; color: var(--text-2); cursor: pointer; }
+.check input { width: 16px; height: 16px; accent-color: var(--action); }
+.row a { font-weight: 600; }
+.btn-primary {
+  margin-top: 16px; width: 100%; height: 44px; border: 0; border-radius: var(--r4);
+  background: var(--action); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background var(--fast) var(--ease);
+}
+.btn-primary:hover { background: var(--action-hover); }
+.btn-primary svg { width: 16px; height: 16px; stroke-width: 1.5; }
+.helps { display: flex; justify-content: center; gap: 16px; margin-top: 24px; }
+.helps a { display: inline-flex; align-items: center; gap: 4px; color: var(--text-2); font-size: 13px; }
+.helps svg { width: 16px; height: 16px; stroke-width: 1.5; }
+.notice { display: flex; gap: 8px; margin-top: 24px; padding: 12px; border-radius: var(--r4); background: var(--bg-subtle); color: var(--text-3); font-size: 12px; line-height: 16px; }
+.notice svg { flex: none; width: 16px; height: 16px; stroke-width: 1.5; color: var(--info); }
+.footer { display: flex; justify-content: center; gap: 12px; padding: 16px 44px 20px; font-size: 12px; color: var(--text-3); }
+.footer strong { color: var(--text-2); font-weight: 600; }
+
+/* ---------- 비주얼 공통 ---------- */
+.v-chip { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 8px; border: 1px solid rgba(255,255,255,.4); border-radius: var(--r4); color: #fff; font-size: 12px; font-weight: 600; }
+.v-chip svg { width: 16px; height: 16px; stroke-width: 1.5; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+}

@@ -1,7 +1,7 @@
 {
   "_comment": "설계기준 3장 표. 컨셉 단계에서는 세 안 모두 같은 주색(ALL# 블루)·같은 상태색·같은 그리드 밀도(28/30)를 쓴다. 컨셉이 바꾸는 것은 아래 값뿐이며 모두 착수보고 스케일 안에서 고른다.",
   "shared": {
-    "primary_color": "ALL# Blue (세 안 동일)",
+    "primary_color": "A. Trust Blue #1D4ED8 (세 안 동일 · 2026-11-20 변경). 테마 3색(Trust Blue · Calm Teal · Graphite Indigo)은 사용자 커스터마이징 테마로 제공",
     "status_colors": "착수보고 4색 고정",
     "grid": { "row": 28, "header": 30 },
     "data": "design/02b-concepts/shared/data.js (세 안 동일)"

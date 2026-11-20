@@ -76,7 +76,7 @@ Phase 4  · Figma 생성 (선택안만) → 게이트 4 → 🎉 완료
 
 - 화면은 `design/00-spec/screens.json` 의 4개로 고정: 로그인 · 01 홈 (T1) · 02 인사현황(재직기준일) (T2) · 03 근무기준설정 (T3)
 - 컨셉 3안의 차이는 `design/00-spec/concept-matrix.json` 값뿐. 세 안은 같은 구조·같은 데이터·같은 색
-- 고정 조건은 `design/00-spec/fixed-conditions.md`, 프로젝트 참고 자료(기획 · 마이크로인터랙션 예제 · 대시보드 샘플)는 `design/00-spec/local-sources.json`
+- 고정 조건은 `design/00-spec/fixed-conditions.md`, 프로젝트 참고 자료(기획 · 마이크로인터랙션 예제 · 대시보드 샘플 · 화면 템플릿)는 `design/00-spec/local-sources.json`
 
 각 게이트 통과 없이는 다음 Phase 진입 불가.
 
@@ -160,6 +160,18 @@ design/
 - **snapshot 추출은 snapshot-runner 가 백그라운드로 한다.** figma-builder 는 lint 0건이면 요청만 남기고 다음 STAGE 로 간다. audit 전에는 세 페이지 스냅샷 전부 PASS 필수
 - **토큰 문서 프레임은 scripts/figma-token-docs.js 로만 그린다** (규격은 docs/token-docs-spec.md · 즉흥 작성 금지)
 - **컴포넌트 문서 페이지(`02b Component Docs`)는 scripts/figma-component-docs.js 로만 그린다** (규격은 docs/component-docs-spec.md · 원본 세트는 `02 Components` 최상위에 두고 문서에는 인스턴스만 · 스냅샷 대상 아님)
+- **기획서·참고 자료에 없는 내용은 추가하지 않는다.**
+  - **기획 내용은 문서에서만 판단한다.** 기획 원본 폴더는 `C:\Users\박민희\Desktop\클로드\3300.UI,UX 프로젝트` 다.
+    - 예: `00. 보고자료/UIUX_개선프로젝트_착수보고.pptx`, `01. 기획 및 Action Plan/ALL#_ERP_화면유형별_UI템플릿_제안.pptx`
+    - 그 밖에 같은 폴더의 ActionPlan · 기획안 · 의견접수 · 레퍼런스 보드 · 대시보드 샘플
+    - 사용자가 직접 준 참고 자료(AS-IS 캡처 등)도 출처로 인정한다
+  - `design/00-spec/`(screens.json · fixed-conditions.md 등)은 하네스가 만든 **요약**이라 출처가 아니다.
+    - 위 문서에서 근거를 확인한 항목만 쓴다
+    - `assumptions`와 문서에 근거 없는 항목은 사용자 확인 전에는 그리지 않는다
+  - 그릴 수 있는 것: 위 문서·참고 자료에 근거가 있는 기능·영역·버튼·탭·문구·데이터 항목만
+  - 더 나은 UX로 보여도 임의로 넣지 않고, 결과 보고에 '제안' 목록으로만 적는다
+  - 문구도 같다: 새 카피·설명문을 지어내지 않고 출처의 표현을 쓴다
+- **Figma 노드 생성·수정은 docs/figma-layout-safety.md 를 따른다** (인스턴스 rescale 금지 → Size 변형 · strokesIncludedInLayout=false · 레이아웃 래퍼 clip 금지 · 반투명은 alpha 변수 · 끝내기 전 구조 검사 4종 · 재설계 시 기존 노드 이동·복제 대신 새로 생성 · 앱에서만 깨지면 같은 노드 반복 패치 금지 → 재생성. 서버 스크린샷만으로 판단 금지)
 - **일반 컨테이너는 내용을 감싼다 (세로 HUG).** 고정 높이는 선언된 컴포넌트와 실제 클리핑·스크롤이 설정된 viewport만 허용 (check-layout.mjs 검사)
 - **화면 이미지는 design-rules.md §I 표가 가리키는 `design/assets/characters/` 파일만 쓴다** (이미지 생성·외부 URL 금지)
 - **아이콘은 lucide 이름으로 적고 CDN 에서 받는다** (손으로 그리지 않는다 · 버전 고정)
